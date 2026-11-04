@@ -57,7 +57,14 @@ Cyberpunk 2077/
 - 일반 무기(아이코닉·레플리카·퀘스트 아이템 제외)를 분해하면 그 무기 모델의 레시피가 분해한 무기와 같은 티어로 제작 목록에 추가됩니다(티어 2 무기 → 티어 2 레시피).
 - 모델당 11개 티어 레코드(1, 1+, 2, 2+, … 5, 5+, 5++)를 로딩 시 생성합니다. `recipeTierMode` 로 `equal`(같은 티어, 기본) / `upto`(이하 전부) / `all`(전부) 을 선택합니다.
 - 모델 결정 순서: `_Default` 프리셋 → `TCO_ModelMap.yaml` 항목 → 같은 표시 이름의 `_Default` 프리셋 → 분해한 프리셋 자체. 외형 변형을 분해해도 기본 외형 레시피를 습득합니다.
-- 제작 비용 = 바닐라 기본 제작 비용(`Items.Small_<등급>_Crafting_Materials_Weapon`) + 해당 티어까지의 누적 업그레이드 비용. 업그레이드 비용은 게임의 `Upgrading.<등급>` / `Upgrading.<무기종류>` 레코드를 로딩 시 읽습니다. `recipeIncludeBaseCost: false` 면 기본 비용을 제외합니다(티어 1 무료).
+- 제작 비용은 로딩 시 바닐라 레코드에서 읽습니다. 티어 1~5(플러스 포함)는 같은 등급의 바닐라 레시피 비용(`Items.Small_<등급>_Crafting_Materials_Weapon`, 부품 30개)을 그대로 씁니다. 티어 5+는 아이코닉의 5 → 5+ 강화 비용(`Upgrading.Legendary`, 티어 5 부품 75개)을 더하고, 티어 5++는 거기에 5+ → 5++ 강화 비용(`Upgrading.LegendaryPlus`, 티어 5 부품 200개)을 더합니다.
+
+  | 티어 | 비용 |
+  |---|---|
+  | 1, 1+ … 4, 4+ | 해당 티어 부품 30개 |
+  | 5 | 티어 5 부품 30개 |
+  | 5+ | 티어 5 부품 105개 |
+  | 5++ | 티어 5 부품 305개 |
 - 같은 이름·같은 등급의 일반 무기 레시피(상점 레시피 `Items.Craftable_*`, 다른 모드)가 이미 있으면 그 티어는 건너뜁니다.
 - 제작되는 무기는 바닐라 `Craftable_*` 과 같이 랜덤 조준경/개조부품 슬롯이 제거된 기본 외형입니다.
 
@@ -100,7 +107,6 @@ Cyberpunk 2077/
 | `replicaRequiredTier` | 8 | 원본·기반 무기의 최소 EffectiveTier (8 = 티어 5, 9 = 5+, 10 = 5++) |
 | `replicaDisassembleAllowed` | true | 레플리카 분해 허용 |
 | `recipeTierMode` | equal | 9 특전 습득 범위: `equal` 같은 티어 / `upto` 이하 전부 / `all` 전부 |
-| `recipeIncludeBaseCost` | true | 9 특전 제작 비용에 바닐라 기본 비용 포함 |
 | `notifications` | true | 화면 알림 |
 | `debugLog` | false | `[TCO]` 디버그 로그 (`FTLog` 와 `ModLog(n"TechieCraftingOverhaul")` 로 출력) |
 

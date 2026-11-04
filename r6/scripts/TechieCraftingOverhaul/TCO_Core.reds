@@ -36,7 +36,6 @@ public abstract class TCO_Config {
   public static func ReplicaRequiredTier() -> Float { return Cast<Float>(TweakDBInterface.GetInt(t"TCO.Config.replicaRequiredTier", 8)); }
   public static func ReplicaDisassembleAllowed() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.replicaDisassembleAllowed", true); }
   public static func RecipeTierMode() -> CName { return TweakDBInterface.GetCName(t"TCO.Config.recipeTierMode", n"equal"); }
-  public static func RecipeIncludeBaseCost() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.recipeIncludeBaseCost", true); }
   public static func Notifications() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.notifications", true); }
   public static func DebugLog() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.debugLog", false); }
 }

@@ -2,7 +2,8 @@
 // TCO - TweakXL 스크립트 트윅 (TweakDB 초기화 직후 실행)
 //   1) 9 특전용 티어별 제작 레코드 생성
 //        모델 M 마다  M_TCO_T1, M_TCO_T1P, M_TCO_T2, ... M_TCO_T5, M_TCO_T5P, M_TCO_T5PP  (11종, EffectiveTier 0..10 순)
-//        제작 비용   = [바닐라 기본 제작 비용] + 티어까지의 누적 업그레이드 비용 (Upgrading.* 에서 읽음)
+//        제작 비용   = 같은 등급의 바닐라 레시피 비용 (Items.Small_<등급>_Crafting_Materials_Weapon)
+//                      티어 5+ / 5++ 는 여기에 아이코닉 강화 비용 (Upgrading.Legendary, Upgrading.LegendaryPlus = 티어 5 부품) 을 더함
 //        연결 flat   = <프리셋>.TCO_model (모델 레코드), <모델>.TCO_tiers (티어 레코드 배열)
 //   2) 20 특전용 레플리카 레코드 생성
 //        아이코닉 I 마다  I_TCO_Replica  (Quest 태그 제거, OnLooted 비움, TCO_Replica 태그 추가)
@@ -274,20 +275,20 @@ public class TCO_Generator {
     }
     ArrayClear(this.m_costIds);
     ArrayClear(this.m_costAmounts);
-    if TCO_Config.RecipeIncludeBaseCost() {
-      let basePackage = TweakDBInterface.GetCraftingPackageRecord(t"Items.Small_" + TDBID.Create(this.m_tierBaseCostQuality[tier]) + t"_Crafting_Materials_Weapon");
-      if IsDefined(basePackage) {
-        let elements: array<wref<RecipeElement_Record>>;
-        basePackage.CraftingRecipe(elements);
-        for element in elements {
-          this.Accumulate(element.Ingredient().GetID(), element.Amount());
-        }
+    // 1) 같은 등급의 바닐라 레시피 비용 (플러스 티어도 같은 등급의 패키지를 쓴다). 티어 1~5 는 이것이 전부.
+    let basePackage = TweakDBInterface.GetCraftingPackageRecord(t"Items.Small_" + TDBID.Create(this.m_tierBaseCostQuality[tier]) + t"_Crafting_Materials_Weapon");
+    if IsDefined(basePackage) {
+      let elements: array<wref<RecipeElement_Record>>;
+      basePackage.CraftingRecipe(elements);
+      for element in elements {
+        this.Accumulate(element.Ingredient().GetID(), element.Amount());
       }
     }
+    // 2) 티어 5+ / 5++ : 아이코닉을 티어 5 에서 그 티어까지 강화하는 비용을 더한다 (티어 5 부품).
+    //    체인 인덱스 8 = 티어 5. Upgrading.Legendary (5 -> 5+), Upgrading.LegendaryPlus (5+ -> 5++)
     let typeUpgrade = TweakDBInterface.GetUpgradingDataRecord(t"Upgrading." + TDBID.Create(typeName));
-    let steps = this.m_tierChainIndex[tier];
-    let step = 0;
-    while step < steps {
+    let step = 8;
+    while step < this.m_tierChainIndex[tier] {
       this.AccumulateUpgrading(typeUpgrade);
       this.AccumulateUpgrading(TweakDBInterface.GetUpgradingDataRecord(t"Upgrading." + TDBID.Create(this.m_qualityChainNames[step])));
       step += 1;

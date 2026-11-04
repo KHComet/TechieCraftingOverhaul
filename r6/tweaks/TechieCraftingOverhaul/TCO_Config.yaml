@@ -35,10 +35,10 @@ TCO.Config.replicaDisassembleAllowed: true
 #   upto  : 분해한 무기 티어 이하 전부
 #   all   : 티어1 ~ 티어5++ 전부
 TCO.Config.recipeTierMode: n"equal"
-# 제작 비용 = 해당 티어까지의 누적 업그레이드 비용(Upgrading.* 레코드에서 읽음)
-# true 이면 여기에 바닐라 기본 제작 비용(Items.Small_<등급>_Crafting_Materials_Weapon)을
-# 바닥 비용으로 더합니다. false 이면 티어1 레시피는 무료가 됩니다.
-TCO.Config.recipeIncludeBaseCost: true
+# 제작 비용은 설정이 아니라 바닐라 레코드에서 읽습니다:
+#   티어 1~5 (플러스 포함) = 같은 등급의 바닐라 레시피 비용 (Items.Small_<등급>_Crafting_Materials_Weapon, 부품 30개)
+#   티어 5+  = 티어 5 비용 + Upgrading.Legendary     (아이코닉 5 -> 5+ 강화 비용, 티어 5 부품 75개)
+#   티어 5++ = 티어 5+ 비용 + Upgrading.LegendaryPlus (아이코닉 5+ -> 5++ 강화 비용, 티어 5 부품 200개)
 
 # --- 기타 ---------------------------------------------------------------------
 TCO.Config.notifications: true

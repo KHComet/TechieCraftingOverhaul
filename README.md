@@ -57,7 +57,14 @@ With `perkMode: attribute` (or when the framework is missing), a perk is active 
 - Disassembling a normal weapon (not iconic, replica or quest item) adds the weapon model's crafting spec at the same tier as the disassembled weapon (a Tier 2 weapon adds a Tier 2 spec).
 - Eleven tier records per model (1, 1+, 2, 2+, ... 5, 5+, 5++) are generated at load. `recipeTierMode` selects `equal` (same tier, default), `upto` (that tier and below) or `all`.
 - Model resolution order: preset named `_Default` → `TCO_ModelMap.yaml` entry → `_Default` preset with the same display name → the disassembled preset itself. Skinned variants teach the default-skin spec.
-- Crafting cost = vanilla base crafting cost (`Items.Small_<Quality>_Crafting_Materials_Weapon`) + cumulative upgrade cost up to that tier, read from the game's `Upgrading.<Quality>` / `Upgrading.<ItemType>` records at load. `recipeIncludeBaseCost: false` drops the base cost (Tier 1 becomes free).
+- Crafting cost is read from vanilla records at load. Tiers 1 to 5 (plus variants included) use the vanilla recipe cost of the same quality (`Items.Small_<Quality>_Crafting_Materials_Weapon`, 30 components). Tier 5+ adds the iconic upgrade cost from Tier 5 to 5+ (`Upgrading.Legendary`, 75 Tier 5 components). Tier 5++ adds the 5+ to 5++ step on top (`Upgrading.LegendaryPlus`, 200 Tier 5 components).
+
+  | Tier | Cost |
+  |---|---|
+  | 1, 1+ ... 4, 4+ | 30 components of that tier |
+  | 5 | 30 Tier 5 components |
+  | 5+ | 105 Tier 5 components |
+  | 5++ | 305 Tier 5 components |
 - A tier is skipped if a normal-weapon spec with the same name and quality is already known (shop specs `Items.Craftable_*`, other mods).
 - Crafted weapons use the default skin with random scope/mod slots removed, like vanilla `Craftable_*` items.
 
@@ -100,7 +107,6 @@ With `perkMode: attribute` (or when the framework is missing), a perk is active 
 | `replicaRequiredTier` | 8 | Minimum EffectiveTier of original and base weapon (8 = Tier 5, 9 = 5+, 10 = 5++) |
 | `replicaDisassembleAllowed` | true | Allow disassembling replicas |
 | `recipeTierMode` | equal | Perk 9 scope: `equal` same tier / `upto` same and lower / `all` |
-| `recipeIncludeBaseCost` | true | Include the vanilla base cost in perk 9 crafting costs |
 | `notifications` | true | On-screen notifications |
 | `debugLog` | false | `[TCO]` debug output via `FTLog` and `ModLog(n"TechieCraftingOverhaul")` |
 
