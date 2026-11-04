@@ -36,26 +36,65 @@ public final const func GetPlayerCraftableItems() -> array<wref<Item_Record>> {
   return wrappedMethod();
 }
 
+// 레플리카 재료 줄: 기반 무기의 보유 수량은 레코드 일치가 아니라 모델 일치(TCO_IsBaseModelInstance)로 센다.
+// 바닐라는 재료 레코드와 똑같은 레코드의 아이템만 세므로, 9 특전으로 제작한 무기나 외형 변형은 0 으로 표시된다.
+@wrapMethod(CraftingSystem)
+public final const func GetItemCraftingCost(itemRecord: wref<Item_Record>) -> array<IngredientData> {
+  let ingredients = wrappedMethod(itemRecord);
+  if IsDefined(itemRecord) && itemRecord.TagsContains(n"TCO_Replica") {
+    let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());
+    if IsDefined(sys) {
+      let i = 0;
+      while i < ArraySize(ingredients) {
+        if IsDefined(ingredients[i].id) && RPGManager.IsItemWeapon(ItemID.CreateQuery(ingredients[i].id.GetID())) {
+          ingredients[i].inventoryQuantity = sys.CountUsableBases(ingredients[i].id.GetID());
+        }
+        i += 1;
+      }
+    }
+  }
+  return ingredients;
+}
+
+// 레플리카 제작 가능 판정: 바닐라 판정(재료 레코드 일치) 대신 기반 무기(모델 일치) + 부품 수량으로 판정한다.
+@addMethod(CraftingSystem)
+private final const func TCO_CanCraftReplicaRecord(itemRecord: wref<Item_Record>) -> Bool {
+  let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());
+  if !IsDefined(sys) || !IsDefined(itemRecord) { return false; }
+  if !sys.CanCraftReplica(itemRecord.GetID()) { return false; }
+  let materials = this.TCO_ReplicaMaterials(itemRecord);
+  return this.HasIngredients(materials);
+}
+
+// 레플리카 레시피 재료 중 무기(기반 무기)를 뺀 부품 목록
+@addMethod(CraftingSystem)
+private final const func TCO_ReplicaMaterials(itemRecord: wref<Item_Record>) -> array<IngredientData> {
+  let materials: array<IngredientData>;
+  let ingredients = this.GetItemCraftingCost(itemRecord);
+  for ingredient in ingredients {
+    if IsDefined(ingredient.id) && !RPGManager.IsItemWeapon(ItemID.CreateQuery(ingredient.id.GetID())) {
+      ArrayPush(materials, ingredient);
+    }
+  }
+  return materials;
+}
+
 // 제작 가능 판정 (목록 항목용)
 @wrapMethod(CraftingSystem)
 public final const func CanItemBeCrafted(itemRecord: wref<Item_Record>) -> Bool {
-  let result = wrappedMethod(itemRecord);
-  if result && IsDefined(itemRecord) && itemRecord.TagsContains(n"TCO_Replica") {
-    let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());
-    result = IsDefined(sys) && sys.CanCraftReplica(itemRecord.GetID());
+  if IsDefined(itemRecord) && itemRecord.TagsContains(n"TCO_Replica") {
+    return this.TCO_CanCraftReplicaRecord(itemRecord);
   }
-  return result;
+  return wrappedMethod(itemRecord);
 }
 
 // 제작 가능 판정 (선택 항목용)
 @wrapMethod(CraftingSystem)
 public final const func CanItemBeCrafted(itemData: wref<gameItemData>) -> Bool {
-  let result = wrappedMethod(itemData);
-  if result && IsDefined(itemData) && itemData.HasTag(n"TCO_Replica") {
-    let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());
-    result = IsDefined(sys) && sys.CanCraftReplica(ItemID.GetTDBID(itemData.GetID()));
+  if IsDefined(itemData) && itemData.HasTag(n"TCO_Replica") {
+    return this.TCO_CanCraftReplicaRecord(TweakDBInterface.GetItemRecord(ItemID.GetTDBID(itemData.GetID())));
   }
-  return result;
+  return wrappedMethod(itemData);
 }
 
 // 레플리카는 아이코닉 태그가 있어도 분해할 수 있다 (설정으로 끌 수 있음)
@@ -108,8 +147,8 @@ private final func TCO_CraftReplica(target: wref<GameObject>, replicaRecord: ref
     ArrayPush(chosen, instance);
   }
 
-  // 2. 부품 검사 (레시피 재료 중 무기가 아닌 것)
-  let ingredients = this.GetItemCraftingCost(replicaRecord);
+  // 2. 부품 검사 (레시피 재료 중 무기가 아닌 것. 기반 무기는 1 에서 모델 기준으로 이미 골랐다)
+  let ingredients = this.TCO_ReplicaMaterials(replicaRecord);
   if !this.HasIngredients(ingredients) { return null; }
 
   // 3. 기반 무기 소모 = 분해 판정 (장착 부품 회수 후 제거)

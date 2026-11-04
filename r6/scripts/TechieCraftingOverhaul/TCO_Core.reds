@@ -177,6 +177,24 @@ public static func TCO_IsOriginalIconic(itemData: wref<gameItemData>) -> Bool {
     && !itemData.HasTag(n"TCO_Replica");
 }
 
+// 기반 무기 판정 (레코드가 아니라 "모델" 기준):
+//   1) 레코드가 매핑의 기반 무기와 같다 (Items.Preset_Burya_Default 등)
+//   2) 9 특전 티어 레코드(<모델>_TCO_T*)의 TCO_model 이 기반 무기와 같다 (9 특전으로 제작한 무기)
+//   3) 같은 무기 종류 + 같은 표시 이름의 일반 무기 (외형 변형 Pimp/Neon/Military, 바닐라 Craftable_* 제작품 등)
+//   아이코닉과 레플리카는 기반 무기가 될 수 없다.
+public static func TCO_IsBaseModelInstance(itemData: wref<gameItemData>, baseID: TweakDBID) -> Bool {
+  if !IsDefined(itemData) || !TDBID.IsValid(baseID) { return false; }
+  let recordID = ItemID.GetTDBID(itemData.GetID());
+  if recordID == baseID { return true; }
+  if TweakDBInterface.GetForeignKey(recordID + t".TCO_model", TDBID.None()) == baseID { return true; }
+  if itemData.HasTag(n"IconicWeapon") || itemData.HasTag(n"TCO_Replica") { return false; }
+  let record = TweakDBInterface.GetItemRecord(recordID);
+  let base = TweakDBInterface.GetItemRecord(baseID);
+  if !IsDefined(record) || !IsDefined(base) { return false; }
+  return Equals(record.ItemType().Type(), base.ItemType().Type())
+    && Equals(record.DisplayName(), base.DisplayName());
+}
+
 // 회수 대상 부품: 개조부품 / 조준경 / 총구 (더미 부품, 본체 부품 제외)
 public static func TCO_IsReturnablePart(record: wref<Item_Record>) -> Bool {
   if !IsDefined(record) { return false; }
@@ -429,7 +447,18 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     return best;
   }
 
-  // 소모할 기반 무기 인스턴스: 요구 티어 이상, 장착 중이 아니고, 퀘스트 아이템이 아닌 것 중 가장 낮은 티어
+  // 기반 무기로 쓸 수 있는 인스턴스인가: 모델 일치, 요구 티어 이상, 장착 중이 아니고, 퀘스트 아이템이 아님
+  public func IsUsableBase(item: wref<gameItemData>, baseID: TweakDBID) -> Bool {
+    let player = this.GetPlayerRef();
+    return IsDefined(item) && IsDefined(player)
+      && TCO_IsBaseModelInstance(item, baseID)
+      && !item.HasTag(n"Quest")
+      && !item.HasTag(n"UnequipBlocked")
+      && !RPGManager.IsItemEquipped(player, item.GetID())
+      && TCO_GetEffectiveTier(item) >= TCO_Config.ReplicaRequiredTier();
+  }
+
+  // 소모할 기반 무기 인스턴스: 사용 가능한 것 중 가장 낮은 티어
   public func FindBaseInstance(baseID: TweakDBID, exclude: array<ItemID>) -> ItemID {
     let player = this.GetPlayerRef();
     if !IsDefined(player) { return ItemID.None(); }
@@ -438,22 +467,32 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     ts.GetItemList(player, items);
     let best: ItemID = ItemID.None();
     let bestTier: Float = 1000.0;
-    let required = TCO_Config.ReplicaRequiredTier();
     for item in items {
-      if IsDefined(item)
-        && ItemID.GetTDBID(item.GetID()) == baseID
-        && !ArrayContains(exclude, item.GetID())
-        && !item.HasTag(n"Quest")
-        && !item.HasTag(n"UnequipBlocked")
-        && !RPGManager.IsItemEquipped(player, item.GetID()) {
+      if !ArrayContains(exclude, item.GetID()) && this.IsUsableBase(item, baseID) {
         let tier = TCO_GetEffectiveTier(item);
-        if tier >= required && tier < bestTier {
+        if tier < bestTier {
           best = item.GetID();
           bestTier = tier;
         }
       }
     }
     return best;
+  }
+
+  // 사용 가능한 기반 무기 개수 (제작 UI 재료 줄의 보유 수량 표시용)
+  public func CountUsableBases(baseID: TweakDBID) -> Int32 {
+    let player = this.GetPlayerRef();
+    if !IsDefined(player) { return 0; }
+    let ts = GameInstance.GetTransactionSystem(this.GetGameInstance());
+    let items: array<wref<gameItemData>>;
+    ts.GetItemList(player, items);
+    let count = 0;
+    for item in items {
+      if this.IsUsableBase(item, baseID) {
+        count += 1;
+      }
+    }
+    return count;
   }
 
   // 복제 조건 (모두 충족): 특전 활성, 원본 소지(티어5+), 기반 무기 소지(매핑이 있는 무기만, 티어5+, 매핑 수만큼), 미복제 종류

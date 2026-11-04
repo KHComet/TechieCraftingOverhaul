@@ -358,6 +358,10 @@ public class TCO_Generator {
       }
       ArrayPush(tags, n"TCO_Replica");
       TweakDBManager.SetFlat(replicaID + t".tags", ToVariant(tags));
+      // 등급을 Legendary(티어 5)로 고정한다. 원본 레코드의 등급이 Random 이면 바닐라 GetItemCraftingCost 가
+      // 플레이어 레벨에 맞춰 티어 2~5 부품(75/55/35/15)을 재료에 덧붙이기 때문이다. 레플리카는 항상 티어 5 이상이며,
+      // 최종 티어(5 / 5+ / 5++)는 제작 시 원본과 맞춘다 (TCO_MatchTier).
+      TweakDBManager.SetFlat(replicaID + t".quality", ToVariant(t"Quality.Legendary"));
       let noLootEffects: array<TweakDBID>;
       TweakDBManager.SetFlat(replicaID + t".OnLooted", ToVariant(noLootEffects));
       let bases = this.ResolveBases(iconic, iconics, presets);
