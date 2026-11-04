@@ -87,7 +87,7 @@ public abstract class TCO_Text {
   }
 
   public static func ReplicaCrafted(gi: GameInstance, itemName: String) -> String {
-    if TCO_Text.IsKorean(gi) { return "정밀한 조치 완료 - 레플리카 제작: " + itemName; }
+    if TCO_Text.IsKorean(gi) { return "계획된 개조 완료 - 레플리카 제작: " + itemName; }
     return "Detail rigging complete - replica assembled: " + itemName;
   }
 
