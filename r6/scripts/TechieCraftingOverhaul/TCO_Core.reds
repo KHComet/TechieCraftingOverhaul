@@ -456,13 +456,12 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     return best;
   }
 
-  // 복제 조건 (모두 충족): 특전 활성, 원본 소지(티어5+), 기반 무기 소지(티어5+, 매핑 수만큼), 미복제 종류
+  // 복제 조건 (모두 충족): 특전 활성, 원본 소지(티어5+), 기반 무기 소지(매핑이 있는 무기만, 티어5+, 매핑 수만큼), 미복제 종류
   // 부품 수량은 바닐라 HasIngredients 가 레시피 재료로 검사한다.
   public func CanCraftReplica(replicaID: TweakDBID) -> Bool {
     if !this.IsPerkActive(TCO_Perk.Rigging20) { return false; }
     let originalID = TweakDBInterface.GetForeignKey(replicaID + t".TCO_original", TDBID.None());
     if !TDBID.IsValid(originalID) { return false; }
-    if !TweakDBInterface.GetBool(replicaID + t".TCO_hasBase", false) { return false; }
     if this.IsClonedRecord(originalID) { return false; }
     let originalItem = this.FindOwnedOriginal(originalID);
     if !ItemID.IsValid(originalItem) { return false; }
@@ -477,7 +476,8 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     return true;
   }
 
-  // 제작 목록 동기화: 소지한 원본에 대응하는 레플리카 레시피를 추가/표시하고, 조건이 깨진 것은 숨긴다.
+  // 제작 목록 동기화: 특전이 활성이고 요구 티어 이상의 원본 아이코닉을 소지하면 그 레플리카 레시피를 추가/표시한다.
+  // 재료(기반 무기, 부품)는 표시 조건이 아니며 제작 버튼 활성(CanCraftReplica)에서만 검사한다. 조건이 깨진 레시피는 숨긴다.
   public func SyncReplicaRecipes() -> Void {
     if this.m_syncing { return; }
     this.m_syncing = true;
@@ -487,23 +487,30 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     if IsDefined(craftingSystem) && IsDefined(craftingSystem.GetPlayerCraftBook()) && IsDefined(player) {
       let book = craftingSystem.GetPlayerCraftBook();
       let wanted: array<TweakDBID>;
-      if this.IsPerkActive(TCO_Perk.Rigging20) {
+      let perkActive = this.IsPerkActive(TCO_Perk.Rigging20);
+      let originals = 0;
+      if perkActive {
         let ts = GameInstance.GetTransactionSystem(gi);
         let items: array<wref<gameItemData>>;
         ts.GetItemList(player, items);
         let required = TCO_Config.ReplicaRequiredTier();
         for item in items {
           if TCO_IsOriginalIconic(item) && TCO_GetEffectiveTier(item) >= required {
+            originals += 1;
             let originalID = ItemID.GetTDBID(item.GetID());
             let replicaID = TweakDBInterface.GetForeignKey(originalID + t".TCO_replica", TDBID.None());
             if TDBID.IsValid(replicaID)
               && !ArrayContains(wanted, replicaID)
-              && !this.IsClonedRecord(originalID)
-              && TweakDBInterface.GetBool(replicaID + t".TCO_hasBase", false) {
+              && !this.IsClonedRecord(originalID) {
               ArrayPush(wanted, replicaID);
             }
           }
         }
+      }
+      if TCO_Config.DebugLog() {
+        let summary = "replica sync: perk=" + ToString(perkActive) + ", originals(T5+)=" + IntToString(originals) + ", listed=" + IntToString(ArraySize(wanted));
+        TCO_Log(summary);
+        TCO_Notify(gi, "[TCO] " + summary);
       }
       for replicaID in wanted {
         if book.KnowsRecipe(replicaID) {

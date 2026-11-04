@@ -11,7 +11,22 @@
 // CraftingSystem 후킹
 // ---------------------------------------------------------------------------
 
-// 제작 메뉴가 목록을 읽을 때마다 레플리카 레시피를 동기화한다.
+// 제작 패널은 CraftingSystem.GetPlayerCraftableItems() 를 쓰지 않고 CraftBook 을 직접 읽는다
+// (CraftingPanelController.GetRecipesList: HideRecipesForOwnedItems() -> GetCraftableItems()).
+// 목록을 읽기 직전에 불리는 HideRecipesForOwnedItems 에서 레플리카 레시피를 동기화한다.
+@wrapMethod(CraftBook)
+public final func HideRecipesForOwnedItems() -> Void {
+  wrappedMethod();
+  let owner = this.GetOwner();
+  if IsDefined(owner) {
+    let sys = TechieCraftingOverhaul.GetInstance(owner.GetGame());
+    if IsDefined(sys) {
+      sys.SyncReplicaRecipes();
+    }
+  }
+}
+
+// 다른 호출자가 CraftingSystem 경유로 목록을 읽는 경우도 동기화한다.
 @wrapMethod(CraftingSystem)
 public final const func GetPlayerCraftableItems() -> array<wref<Item_Record>> {
   let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());

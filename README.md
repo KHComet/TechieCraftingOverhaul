@@ -78,8 +78,8 @@ With `perkMode: attribute` (or when the framework is missing), a perk is active 
 ### Detail Rigging (Tech 20)
 
 - At load, a replica record `<Iconic>_TCO_Replica` is created for every iconic weapon record (`Quest` tag removed, `OnLooted` quest-fact effect removed, `TCO_Replica` tag added). Modded iconics are included.
-- Opening the crafting menu lists replica specs for owned Tier 5+ originals. Entries disappear when the conditions no longer hold.
-- Conditions (all): perk active; original owned (Tier 5+); base weapon(s) owned (Tier 5+, one per mapping entry, not equipped, not quest items); configured component amount; weapon type not yet replicated; original is not itself a replica.
+- Opening the crafting menu lists a replica spec for every Tier 5+ original iconic in the inventory (perk active, type not yet replicated). Materials are not a listing condition. Entries disappear when the original leaves the inventory or the type has been replicated.
+- Crafting conditions (all): perk active; original owned (Tier 5+); base weapon(s) owned when a mapping exists (Tier 5+, one per mapping entry, not equipped, not quest items); configured component amount; weapon type not yet replicated; original is not itself a replica. Iconics without any base mapping cost components only.
 - Result: original kept, base weapon(s) consumed (treated as disassembly, mods recovered), replica granted. The replica's upgrade count, quality and plus stats are matched to the original so both end at the same tier. Unique effects follow from the cloned record.
 - The once-only rule is keyed by weapon type (display-name LocKey). The log is stored in the save and is not reset by disassembling the replica.
 - Replicas can be disassembled despite the iconic tag (`replicaDisassembleAllowed`).
@@ -87,6 +87,7 @@ With `perkMode: attribute` (or when the framework is missing), a perk is active 
 ### Base weapon map (`TCO_BaseWeaponMap.yaml`)
 
 - 119 entries covering vanilla iconics, generated from the 2.5 tweak sources. Most map to the parent preset (`Preset_<Weapon>_Default`). Twelve without a matching family are set manually (Malorian Arms 3516 → Tamayura `Preset_Kenshin_Default` + Overture, Caretaker's Spade → Hammer, Cottonmouth / Sir John / Tinker Bell → Baton, etc.).
+- Quality variant records of an iconic (`Common_` / `Uncommon_` / `Rare_` / `Epic_` / `Legendary_<Iconic>`, which is what the player usually holds in 2.x) inherit the mapping of the record with the same display name (`Preset_<Iconic>`).
 - Iconics missing from the table (modded weapons) are matched automatically: same weapon type and same `friendlyName` `_Default` preset.
 - Format:
   ```yaml
@@ -108,7 +109,7 @@ With `perkMode: attribute` (or when the framework is missing), a perk is active 
 | `replicaDisassembleAllowed` | true | Allow disassembling replicas |
 | `recipeTierMode` | equal | Perk 9 scope: `equal` same tier / `upto` same and lower / `all` |
 | `notifications` | true | On-screen notifications |
-| `debugLog` | false | `[TCO]` debug output via `FTLog` and `ModLog(n"TechieCraftingOverhaul")` |
+| `debugLog` | false | `[TCO]` debug output via `FTLog` and `ModLog(n"TechieCraftingOverhaul")`, plus an on-screen summary of the replica list sync when the crafting menu opens |
 
 ## Custom perk icons
 

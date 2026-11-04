@@ -360,13 +360,13 @@ public class TCO_Generator {
       TweakDBManager.SetFlat(replicaID + t".tags", ToVariant(tags));
       let noLootEffects: array<TweakDBID>;
       TweakDBManager.SetFlat(replicaID + t".OnLooted", ToVariant(noLootEffects));
-      let bases = this.ResolveBases(iconic, presets);
+      let bases = this.ResolveBases(iconic, iconics, presets);
       let hasBase = ArraySize(bases) > 0;
-      if hasBase {
-        TweakDBManager.SetFlat(replicaID + t".CraftingData", ToVariant(this.BuildReplicaPackage(replicaID, bases)));
-      } else {
+      if !hasBase {
         this.m_noBaseCount += 1;
       }
+      // 기반 무기가 없는 아이코닉(매핑/자동 매칭 모두 실패)은 부품만으로 복제한다
+      TweakDBManager.SetFlat(replicaID + t".CraftingData", ToVariant(this.BuildReplicaPackage(replicaID, bases)));
       TweakDBManager.SetFlat(replicaID + t".TCO_bases", ToVariant(bases));
       TweakDBManager.SetFlat(replicaID + t".TCO_hasBase", ToVariant(hasBase));
       TweakDBManager.SetFlat(replicaID + t".TCO_original", ToVariant(originalID));
@@ -376,21 +376,21 @@ public class TCO_Generator {
     }
   }
 
-  // 기반 무기 결정: 매핑 테이블 > 자동 (같은 종류 + 같은 friendlyName, _Default 우선)
-  private func ResolveBases(iconic: ref<WeaponItem_Record>, presets: array<ref<WeaponItem_Record>>) -> array<TweakDBID> {
-    let result: array<TweakDBID>;
-    let mapping = TweakDBInterface.GetCraftableRecord(t"TCO.BaseMap." + iconic.GetID());
-    if IsDefined(mapping) {
-      let items: array<wref<Item_Record>>;
-      mapping.CraftableItem(items);
-      for item in items {
-        if IsDefined(item) {
-          ArrayPush(result, item.GetID());
-        }
+  // 기반 무기 결정: 매핑 테이블(직접) > 매핑 테이블(같은 표시 이름의 다른 레코드) > 자동 (같은 종류 + 같은 friendlyName, _Default 우선)
+  // 2.x 아이코닉은 등급 변형 레코드(Common_/Uncommon_/Rare_/Epic_/Legendary_<아이코닉>)를 가지며 실제 소지 아이템은
+  // 그 변형일 수 있다. 변형은 Preset_<아이코닉> 과 표시 이름이 같으므로 그 매핑을 물려받는다.
+  private func ResolveBases(iconic: ref<WeaponItem_Record>, iconics: array<ref<WeaponItem_Record>>, presets: array<ref<WeaponItem_Record>>) -> array<TweakDBID> {
+    let result = this.MappedBases(iconic.GetID());
+    if ArraySize(result) > 0 {
+      return result;
+    }
+    for other in iconics {
+      if ArraySize(result) == 0 && !(other.GetID() == iconic.GetID()) && Equals(other.DisplayName(), iconic.DisplayName()) {
+        result = this.MappedBases(other.GetID());
       }
-      if ArraySize(result) > 0 {
-        return result;
-      }
+    }
+    if ArraySize(result) > 0 {
+      return result;
     }
     let friendly = iconic.FriendlyName();
     let itemType = iconic.ItemType().Type();
@@ -410,6 +410,22 @@ public class TCO_Generator {
     if !TDBID.IsValid(chosen) { chosen = fallback; }
     if TDBID.IsValid(chosen) {
       ArrayPush(result, chosen);
+    }
+    return result;
+  }
+
+  // TCO.BaseMap.<아이코닉> 매핑 항목의 기반 무기 목록 (없으면 빈 배열)
+  private func MappedBases(iconicID: TweakDBID) -> array<TweakDBID> {
+    let result: array<TweakDBID>;
+    let mapping = TweakDBInterface.GetCraftableRecord(t"TCO.BaseMap." + iconicID);
+    if IsDefined(mapping) {
+      let items: array<wref<Item_Record>>;
+      mapping.CraftableItem(items);
+      for item in items {
+        if IsDefined(item) {
+          ArrayPush(result, item.GetID());
+        }
+      }
     }
     return result;
   }
