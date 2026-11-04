@@ -1,0 +1,45 @@
+# ============================================================================
+# Techie Crafting Overhaul - 설정 파일 (TweakXL YAML)
+# 이 파일의 값은 게임 시작 시 읽히며, 스크립트는 수치를 하드코딩하지 않습니다.
+# 값을 바꾼 뒤에는 게임을 다시 시작하거나 CET 콘솔에서 TweakXL.Reload() 를 실행하세요.
+# ============================================================================
+
+# --- 특전 모드 ------------------------------------------------------------------
+# auto      : Perk Addition Framework 가 설치되어 있으면 테크 트리의 실제 노드(구매 필요)로,
+#             없으면 아래 능력치 임계값으로 자동 활성화
+# tree      : 항상 트리 노드로 판정 (프레임워크가 없으면 특전이 비활성)
+# attribute : 항상 능력치 임계값으로 판정 (트리에 노드를 넣지 않음)
+TCO.Config.perkMode: n"auto"
+
+# --- 특전 활성화 / 요구 테크 능력치 (attribute 모드, 또는 auto 모드의 대체 경로) ----------
+# 트리 노드 모드에서는 바닐라 티어 레코드가 요구치를 정합니다 (Adept 9 / Expert 15 / Master 20).
+TCO.Config.perk9Enabled: true
+TCO.Config.perk15Enabled: true
+TCO.Config.perk20Enabled: true
+TCO.Config.perk9Attribute: 9
+TCO.Config.perk15Attribute: 15
+TCO.Config.perk20Attribute: 20
+
+# --- 20 특전 (Detail Rigging, 아이코닉 복제) ----------------------------------
+# 복제에 소모되는 아이템 부품(티어 5 = Legendary)과 수량
+TCO.Config.replicaMaterialItem: t"Items.LegendaryMaterial1"
+TCO.Config.replicaMaterialAmount: 200
+# 원본·기반 무기의 최소 티어 (EffectiveTier 스탯: 8 = 티어5, 9 = 티어5+, 10 = 티어5++)
+TCO.Config.replicaRequiredTier: 8
+# 레플리카 분해 허용 여부 (바닐라 2.x 는 아이코닉 분해 불가, 레플리카만 예외 허용)
+TCO.Config.replicaDisassembleAllowed: true
+
+# --- 9 특전 (If Johnny Were a Techie..., 레시피 습득) --------------------------
+# 분해한 무기에서 배우는 티어 범위
+#   equal : 분해한 무기와 같은 티어 하나만 (기본, 티어2 무기를 분해하면 티어2 도안)
+#   upto  : 분해한 무기 티어 이하 전부
+#   all   : 티어1 ~ 티어5++ 전부
+TCO.Config.recipeTierMode: n"equal"
+# 제작 비용 = 해당 티어까지의 누적 업그레이드 비용(Upgrading.* 레코드에서 읽음)
+# true 이면 여기에 바닐라 기본 제작 비용(Items.Small_<등급>_Crafting_Materials_Weapon)을
+# 바닥 비용으로 더합니다. false 이면 티어1 레시피는 무료가 됩니다.
+TCO.Config.recipeIncludeBaseCost: true
+
+# --- 기타 ---------------------------------------------------------------------
+TCO.Config.notifications: true
+TCO.Config.debugLog: false

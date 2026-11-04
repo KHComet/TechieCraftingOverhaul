@@ -1,0 +1,501 @@
+# ============================================================================
+# Techie Crafting Overhaul - 20 특전 기반 무기 매핑 테이블 (바닐라 전체)
+#
+# 아이코닉 복제에 소모되는 "기반 무기"를 지정합니다. 결정 순서:
+#   1. 아래 테이블(TCO.BaseMap.<아이코닉 레코드>)에 지정된 무기 (우선)
+#   2. 자동: 같은 무기 종류(itemType)와 같은 friendlyName 을 가진 일반 *_Default 프리셋
+#
+# 형식: 키 = "TCO.BaseMap." + 아이코닉 레코드 ID, craftableItem = 기반 무기 목록 (1개 이상)
+#       같은 무기를 두 번 적으면 2자루가 필요합니다.
+# 바닐라 아이코닉은 모두 명시해 두었으므로 자동 매칭은 모드 무기에만 쓰입니다.
+# 게임 데이터(CDPR 2.5 tweak 소스)를 기준으로 생성했으며, 기반 무기는 자유롭게 바꿔도 됩니다.
+# ============================================================================
+
+# --- base_handguns_chao/preset_base_chao ---
+TCO.BaseMap.Items.Preset_Chao_VooDoo:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Chao_Default ]
+
+# --- base_handguns_kappa/preset_base_kappa ---
+TCO.BaseMap.Items.Preset_Kappa_George:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kappa_Default ]
+TCO.BaseMap.Items.Preset_Kappa_Legendary:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kappa_Default ]
+
+# --- base_handguns_kenshin/preset_base_kenshin ---
+TCO.BaseMap.Items.Preset_Kenshin_Frank:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kenshin_Default ]
+TCO.BaseMap.Items.Preset_Kenshin_Royce:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kenshin_Default ]
+TCO.BaseMap.Items.Preset_Kenshin_Spy:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kenshin_Default ]
+
+# --- base_handguns_lexington/preset_base_lexington ---
+TCO.BaseMap.Items.Preset_Lexington_Rook:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Lexington_Default ]
+TCO.BaseMap.Items.Preset_Lexington_Shooting_Competition:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Lexington_Default ]
+# 다잉 나이트 (Dying Night)
+TCO.BaseMap.Items.Preset_Lexington_Wilson:  # Wea_Handgun (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Lexington_Default ]
+# 다잉 나이트 퀘스트 변형
+TCO.BaseMap.Items.Preset_Q001_Lexington:  # Wea_Handgun (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Lexington_Default ]
+
+# --- base_handguns_liberty/preset_base_liberty ---
+TCO.BaseMap.Items.Preset_Liberty_Dex:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Liberty_Default ]
+TCO.BaseMap.Items.Preset_Liberty_Padre:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Liberty_Default ]
+TCO.BaseMap.Items.Preset_Liberty_Rogue:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Liberty_Default ]
+TCO.BaseMap.Items.Preset_Liberty_Rogue_Stash:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Liberty_Default ]
+TCO.BaseMap.Items.Preset_Liberty_Yorinobu:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Liberty_Default ]
+
+# --- base_handguns_nue/preset_base_nue ---
+TCO.BaseMap.Items.Preset_Nue_Bree:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nue_Default ]
+TCO.BaseMap.Items.Preset_Nue_Jackie:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nue_Default ]
+TCO.BaseMap.Items.Preset_Nue_Jackie_Iconic:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nue_Default ]
+TCO.BaseMap.Items.Preset_Nue_Maiko:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nue_Default ]
+
+# --- base_handguns_omaha/preset_base_omaha ---
+TCO.BaseMap.Items.Preset_Omaha_Suzie:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Omaha_Default ]
+
+# --- base_handguns_unity/preset_base_unity ---
+TCO.BaseMap.Items.Preset_Unity_Agent:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Unity_Default ]
+TCO.BaseMap.Items.Preset_Unity_Angelica:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Unity_Default ]
+
+# --- base_handguns_yukimura/preset_base_yukimura ---
+TCO.BaseMap.Items.Preset_Yukimura_Kiji:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Yukimura_Default ]
+TCO.BaseMap.Items.Preset_Yukimura_Skippy:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Yukimura_Default ]
+TCO.BaseMap.Items.Preset_Yukimura_Skippy_PostQuest:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Yukimura_Default ]
+
+# --- base_lmgs_defender/preset_base_defender ---
+TCO.BaseMap.Items.Preset_Defender_Kurt:  # Wea_LightMachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Defender_Default ]
+
+# --- base_lmgs_ma70/preset_base_ma70 ---
+TCO.BaseMap.Items.Preset_MA70_Collectible:  # Wea_LightMachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_MA70_Default ]
+
+# --- base_melee/preset_axe ---
+TCO.BaseMap.Items.Preset_Fanged_Axe_Collectible:  # Wea_Axe
+  $type: Craftable
+  craftableItem: [ Items.Preset_Fanged_Axe_Default ]
+TCO.BaseMap.Items.Preset_VB_Axe:  # Wea_Axe
+  $type: Craftable
+  craftableItem: [ Items.Preset_Tomahawk_Default ]
+
+# --- base_melee/preset_bat ---
+TCO.BaseMap.Items.Preset_Baseball_Bat_Denny:  # Wea_TwoHandedClub
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baseball_Bat_Default ]
+TCO.BaseMap.Items.Preset_Baseball_Bat_Legendary:  # Wea_TwoHandedClub
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baseball_Bat_Default ]
+TCO.BaseMap.Items.Preset_Baseball_Bat_Malina:  # Wea_TwoHandedClub
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baseball_Bat_Default ]
+
+# --- base_melee/preset_baton ---
+# 머피의 법칙 (Murphy's Law) - 부모 프리셋인 바톤 감마 지정
+TCO.BaseMap.Items.Preset_Baton_Murphy:  # Wea_OneHandedClub (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baton_Gamma ]
+
+# --- base_melee/preset_cane ---
+# 코튼마우스 (핑거스의 지팡이) - 한손 둔기 중 바톤 지정
+TCO.BaseMap.Items.Preset_Cane_Fingers:  # Wea_OneHandedClub (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baton_Alpha ]
+
+# --- base_melee/preset_chainsword ---
+TCO.BaseMap.Items.Preset_Chainsword_Legendary:  # Wea_Chainsword
+  $type: Craftable
+  craftableItem: [ Items.Preset_Chainsword_Default ]
+
+# --- base_melee/preset_dildo ---
+# 서 존 팔루스티프 (상점판)
+TCO.BaseMap.Items.Preset_Dildo_SexShop:  # Wea_OneHandedClub (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baton_Alpha ]
+# 서 존 팔루스티프 - 한손 둔기 중 바톤 지정
+TCO.BaseMap.Items.Preset_Dildo_Stout:  # Wea_OneHandedClub (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baton_Alpha ]
+
+# --- base_melee/preset_katana ---
+TCO.BaseMap.Items.Preset_Katana_Cocktail:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_E3:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_GoG:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_Hiromi:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_Saburo:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_Surgeon:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_Takemura:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Katana_Wakako:  # Wea_Katana
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Sword_Sihil:  # Wea_Sword
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+TCO.BaseMap.Items.Preset_Sword_Witcher:  # Wea_Sword
+  $type: Craftable
+  craftableItem: [ Items.Preset_Katana_Default ]
+
+# --- base_melee/preset_knife ---
+# 정육점 칼 아이코닉 - 일반 정육점 칼 지정
+TCO.BaseMap.Items.Preset_Butchers_Knife_Iconic:  # Wea_LongBlade (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Butchers_Knife_Default ]
+TCO.BaseMap.Items.Preset_Knife_Stinger:  # Wea_Knife
+  $type: Craftable
+  craftableItem: [ Items.Preset_Knife_Default ]
+TCO.BaseMap.Items.Preset_Neurotoxin_Knife_Iconic:  # Wea_Knife
+  $type: Craftable
+  craftableItem: [ Items.Preset_Neurotoxin_Knife_Default ]
+TCO.BaseMap.Items.Preset_Punk_Knife_Iconic:  # Wea_Knife
+  $type: Craftable
+  craftableItem: [ Items.Preset_Punk_Knife_Default ]
+TCO.BaseMap.Items.Preset_Tanto_Saburo:  # Wea_Knife
+  $type: Craftable
+  craftableItem: [ Items.Preset_Tanto_Default ]
+
+# --- base_melee/preset_machete ---
+TCO.BaseMap.Items.Preset_Machete_Borg_AirDrop:  # Wea_Machete
+  $type: Craftable
+  craftableItem: [ Items.Preset_Machete_Borg_Default ]
+
+# --- base_melee/preset_one_hand_blunts ---
+# 팅커벨 - 바톤 알파 지정
+TCO.BaseMap.Items.Preset_Baton_Tinker_Bell:  # Wea_OneHandedClub (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Baton_Alpha ]
+TCO.BaseMap.Items.Preset_Crowbar_Bunker:  # Wea_OneHandedClub
+  $type: Craftable
+  craftableItem: [ Items.Preset_Crowbar_Default ]
+
+# --- base_melee/preset_shovel ---
+# 케어테이커의 삽 - 양손 둔기 계열 없음: 해머 지정
+TCO.BaseMap.Items.Preset_Shovel_Caretaker:  # Wea_Hammer (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Hammer_Default ]
+# 케어테이커의 삽 (창고 지급판)
+TCO.BaseMap.Items.Preset_Shovel_Caretaker_Stash:  # Wea_Hammer (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Hammer_Default ]
+
+# --- base_revolvers_burya/preset_base_burya ---
+TCO.BaseMap.Items.Preset_Burya_AirDrop:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Burya_Default ]
+TCO.BaseMap.Items.Preset_Burya_Comrade:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Burya_Default ]
+TCO.BaseMap.Items.Preset_Burya_King:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Burya_Default ]
+
+# --- base_revolvers_crusher/preset_base_crusher ---
+TCO.BaseMap.Items.Preset_Crusher_Amazon:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Crusher_Default ]
+
+# --- base_revolvers_malorian_overture/preset_malorian_overture ---
+TCO.BaseMap.Items.Preset_Overture_Cassidy:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Overture_Default ]
+TCO.BaseMap.Items.Preset_Overture_Dante:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Overture_Default ]
+TCO.BaseMap.Items.Preset_Overture_Dodger:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Overture_Default ]
+TCO.BaseMap.Items.Preset_Overture_Kerry:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Overture_Default ]
+TCO.BaseMap.Items.Preset_Overture_River:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Overture_Default ]
+
+# --- base_revolvers_malorian_silverhand/preset_malorian_silverhand ---
+# 말로리안 암즈 3516 (조니) - 전용 계열 없음: 타마유라(Kenshin) + 오버추어
+TCO.BaseMap.Items.Preset_Silverhand_3516:  # Wea_Handgun (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kenshin_Default, Items.Preset_Overture_Default ]
+
+# --- base_revolvers_nova/preset_base_nova ---
+TCO.BaseMap.Items.Preset_Nova_Doom_Doom:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nova_Default ]
+TCO.BaseMap.Items.Preset_Nova_Hitman:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nova_Default ]
+
+# --- base_revolvers_quasar/preset_base_quasar ---
+TCO.BaseMap.Items.Preset_Quasar_Baron:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Quasar_Default ]
+
+# --- base_rifles_achilles/preset_base_achilles ---
+TCO.BaseMap.Items.Preset_Achilles_Collectible:  # Wea_PrecisionRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Achilles_Default ]
+TCO.BaseMap.Items.Preset_Achilles_Nash:  # Wea_PrecisionRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Achilles_Default ]
+
+# --- base_rifles_ajax/preset_base_ajax ---
+TCO.BaseMap.Items.Preset_Ajax_Amazon:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Ajax_Default ]
+TCO.BaseMap.Items.Preset_Ajax_Moron:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Ajax_Default ]
+
+# --- base_rifles_ashura/preset_base_ashura ---
+TCO.BaseMap.Items.Preset_Ashura_Twitch:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Ashura_Default ]
+
+# --- base_rifles_copperhead/preset_base_copperhead ---
+TCO.BaseMap.Items.Preset_Copperhead_Genesis:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Copperhead_Default ]
+
+# --- base_rifles_grad/preset_base_grad ---
+TCO.BaseMap.Items.Preset_Grad_AirDrop:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Grad_Default ]
+TCO.BaseMap.Items.Preset_Grad_Buck:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Grad_Default ]
+TCO.BaseMap.Items.Preset_Grad_Panam:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Grad_Default ]
+TCO.BaseMap.Items.Preset_Grad_Scav:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Grad_Default ]
+
+# --- base_rifles_kolac/preset_base_kolac ---
+TCO.BaseMap.Items.Preset_Kolac_Tiny_Mike:  # Wea_PrecisionRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kolac_Default ]
+
+# --- base_rifles_kyubi/preset_base_kyubi ---
+TCO.BaseMap.Items.Preset_Kyubi_Amazon:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kyubi_Default ]
+TCO.BaseMap.Items.Preset_Kyubi_Legendary:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kyubi_Default ]
+TCO.BaseMap.Items.Preset_Kyubi_Myers:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Kyubi_Default ]
+
+# --- base_rifles_masamune/preset_base_masamune ---
+TCO.BaseMap.Items.Preset_Masamune_Rogue:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Masamune_Default ]
+TCO.BaseMap.Items.Preset_Masamune_Rogue_Stash:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Masamune_Default ]
+
+# --- base_rifles_nekomata/preset_base_nekomata ---
+TCO.BaseMap.Items.Preset_Nekomata_Amazon:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nekomata_Default ]
+TCO.BaseMap.Items.Preset_Nekomata_Breakthrough:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Nekomata_Default ]
+
+# --- base_rifles_pozhar/preset_base_pozhar ---
+TCO.BaseMap.Items.Preset_Pozhar_AirDrop:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Pozhar_Default ]
+TCO.BaseMap.Items.Preset_Pozhar_Legendary:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Pozhar_Default ]
+
+# --- base_rifles_sidewinder/preset_base_sidewinder ---
+TCO.BaseMap.Items.Preset_Sidewinder_Divided:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Sidewinder_Default ]
+
+# --- base_rifles_umbra/preset_base_umbra ---
+TCO.BaseMap.Items.Preset_Umbra_Bebe:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Umbra_Default ]
+TCO.BaseMap.Items.Preset_Umbra_Collectible:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Umbra_Default ]
+
+# --- base_shotguns_carnage/preset_base_carnage ---
+TCO.BaseMap.Items.Preset_Carnage_Edgerunners:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Carnage_Default ]
+TCO.BaseMap.Items.Preset_Carnage_Mox:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Carnage_Default ]
+
+# --- base_shotguns_igla/preset_base_igla ---
+TCO.BaseMap.Items.Preset_Igla_Sovereign:  # Wea_ShotgunDual
+  $type: Craftable
+  craftableItem: [ Items.Preset_Igla_Default ]
+
+# --- base_shotguns_satara/preset_base_satara ---
+TCO.BaseMap.Items.Preset_Satara_Brick:  # Wea_ShotgunDual
+  $type: Craftable
+  craftableItem: [ Items.Preset_Satara_Default ]
+
+# --- base_shotguns_tactician/preset_base_tactician ---
+TCO.BaseMap.Items.Preset_Tactician_Dino:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Tactician_Default ]
+TCO.BaseMap.Items.Preset_Tactician_Headsman:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Tactician_Default ]
+
+# --- base_shotguns_testera/preset_base_testera ---
+TCO.BaseMap.Items.Preset_Testera_Nicolas:  # Wea_ShotgunDual
+  $type: Craftable
+  craftableItem: [ Items.Preset_Testera_Default ]
+
+# --- base_shotguns_zhuo/preset_base_zhuo ---
+TCO.BaseMap.Items.Preset_Zhuo_Eight_Star:  # Wea_Shotgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Zhuo_Default ]
+
+# --- base_submachineguns_dian/preset_base_dian ---
+TCO.BaseMap.Items.Preset_Dian_Yinglong:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Dian_Default ]
+
+# --- base_submachineguns_guillotine/preset_base_guillotine ---
+TCO.BaseMap.Items.Preset_Guillotine_Collectible:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Guillotine_Default ]
+
+# --- base_submachineguns_pulsar/preset_base_pulsar ---
+TCO.BaseMap.Items.Preset_Pulsar_Buzzsaw:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Pulsar_Default ]
+
+# --- base_submachineguns_saratoga/preset_base_saratoga ---
+TCO.BaseMap.Items.Preset_Saratoga_Maelstrom:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Saratoga_Default ]
+TCO.BaseMap.Items.Preset_Saratoga_Raffen:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Saratoga_Default ]
+
+# --- base_submachineguns_senkoh/preset_base_senkoh ---
+TCO.BaseMap.Items.Preset_Senkoh_Prototype:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Senkoh_Default ]
+
+# --- base_submachineguns_shingen/preset_base_shingen ---
+TCO.BaseMap.Items.Preset_Shingen_Prototype:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Shingen_Default ]
+
+# --- ep1_handguns_grit/preset_base_grit ---
+TCO.BaseMap.Items.Preset_Grit_Amazon:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Grit_Default ]
+
+# --- ep1_handguns_ticon/preset_base_ticon ---
+TCO.BaseMap.Items.Preset_Ticon_Gwent:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Ticon_Default ]
+TCO.BaseMap.Items.Preset_Ticon_Reed:  # Wea_Handgun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Ticon_Default ]
+
+# --- ep1_revolvers_metel/preset_base_metel ---
+TCO.BaseMap.Items.Preset_Metel_AirDrop:  # Wea_Revolver
+  $type: Craftable
+  craftableItem: [ Items.Preset_Metel_Default ]
+# 커트의 메텔 (Rosco)
+TCO.BaseMap.Items.Preset_Metel_Kurt:  # Wea_Revolver (수동 지정)
+  $type: Craftable
+  craftableItem: [ Items.Preset_Metel_Default ]
+
+# --- ep1_rifles_hercules/preset_base_hercules ---
+TCO.BaseMap.Items.Preset_Hercules_Prototype:  # Wea_Rifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Hercules_Default ]
+
+# --- ep1_rifles_osprey/preset_base_osprey ---
+TCO.BaseMap.Items.Preset_Osprey_Prototype:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Osprey_Default ]
+
+# --- ep1_rifles_tech_sniper_rifle/preset_base_tech_sniper_rifle ---
+TCO.BaseMap.Items.Preset_Rasetsu_Prototype:  # Wea_SniperRifle
+  $type: Craftable
+  craftableItem: [ Items.Preset_Tech_Sniper_Rifle_Default ]
+
+# --- ep1_submachineguns_borg4a/preset_base_borg4a ---
+TCO.BaseMap.Items.Preset_Borg4a_HauntedGun:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Borg4a_Default ]
+
+# --- ep1_submachineguns_warden/preset_base_warden ---
+TCO.BaseMap.Items.Preset_Warden_Amazon:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Warden_Default ]
+TCO.BaseMap.Items.Preset_Warden_Boris:  # Wea_SubmachineGun
+  $type: Craftable
+  craftableItem: [ Items.Preset_Warden_Default ]

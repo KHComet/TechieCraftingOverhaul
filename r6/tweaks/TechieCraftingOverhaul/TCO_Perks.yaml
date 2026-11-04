@@ -1,0 +1,68 @@
+# ============================================================================
+# Techie Crafting Overhaul - 테크 트리 특전 노드 3종 (Perk Addition Framework 필요)
+#
+# 2.x 특전은 gamedataNewPerkType enum 으로 식별되므로 바닐라만으로는 새 노드를 만들 수 없지만,
+# Perk Addition Framework(JonnesTT) 가 Codeware 리플렉션으로 enum 을 확장해
+# "NewPerks.<enumName>" 레코드를 실제 특전으로 만들어 줍니다.
+#
+# 특전 화면은 모든 슬롯 위젯을 갖고 있고 속성이 쓰는 슬롯만 켜므로, 테크 트리가 쓰지 않는 슬롯을 빌려 씁니다.
+# 연결선은 레이아웃에 미리 정의된 슬롯 쌍에만 그려지므로, 다른 속성 트리가 실제로 쓰는 연결 쌍 중 테크가 비워 둔 것을 골랐습니다:
+#   Right_Milestone_2 -> Right_Perk_2_1 (Body/Cool/Int/Ref), Right_Perk_2_1 -> Right_Perk_2_3 (Reflexes)
+#   9  -> Right_Milestone_2 (2행 우측, 마일스톤 위젯)
+#   15 -> Right_Perk_2_1   (2행 우측, 일반 위젯)
+#   20 -> Right_Perk_2_3   (2행 우측, 일반 위젯)
+# 세 노드는 2행 우측에 사슬로 이어집니다. 15/20 이 2행 영역에 놓이지만 잠금과 요구치는 티어 레코드대로 15/20 이며,
+# 설명문에 요구 능력치를 따로 적어 둡니다.
+# 카테고리는 위젯 종류와 맞춥니다 (마일스톤 / 일반 / 일반). 작은 위젯에 마일스톤·마스터 카테고리를 넣으면
+# 호버 애니메이션 이름이 어긋나 아이콘이 사라집니다.
+# 요구 능력치는 바닐라 티어 레코드가 정합니다: Adept = 9, Expert = 15, Master = 20.
+#
+# 이 레코드는 TCO_Tweaks.reds 가 Perk Addition Framework 를 감지했을 때만
+# NewPerks.TechnicalAbilityAttributeData.perks 에 연결합니다 (TCO.Config.perkMode 참고).
+# 이름/설명 LocKey 는 TCO_Localization.reds (Codeware) 에서 정의합니다.
+# ============================================================================
+
+NewPerks.TCO_Tech_Johnny:
+  $type: NewPerk
+  enumName: TCO_Tech_Johnny
+  enumComment: "TCO 9: If Johnny Were a Techie... - disassembling a non-iconic weapon teaches its crafting spec at every tier"
+  loc_name_key: LocKey#TCO-Perk9-Name
+  loc_desc_key: LocKey#TCO-Perk9-Desc
+  perkIcon: UIIcon.Crafting_Area_02_Perk_2
+  category: NewPerks.MilestoneNewPerkCategory
+  slot: NewPerks.Right_Milestone_2
+  requiresPerks: []
+  tier: NewPerks.AdeptNewPerkTier
+  attribute: NewPerks.TechnicalAbilityAttributeData
+  levels:
+    - loc_desc_key: LocKey#TCO-Perk9-Desc
+
+NewPerks.TCO_Tech_Removable:
+  $type: NewPerk
+  enumName: TCO_Tech_Removable
+  enumComment: "TCO 15: Should've Been Removable - weapon mods can be removed and swapped without loss, and are returned on disassembly"
+  loc_name_key: LocKey#TCO-Perk15-Name
+  loc_desc_key: LocKey#TCO-Perk15-Desc
+  perkIcon: UIIcon.CraftingTrait01
+  category: NewPerks.SimpleNewPerkCategory
+  slot: NewPerks.Right_Perk_2_1
+  requiresPerks: [ NewPerks.TCO_Tech_Johnny ]
+  tier: NewPerks.ExpertNewPerkTier
+  attribute: NewPerks.TechnicalAbilityAttributeData
+  levels:
+    - loc_desc_key: LocKey#TCO-Perk15-Desc
+
+NewPerks.TCO_Tech_Rigging:
+  $type: NewPerk
+  enumName: TCO_Tech_Rigging
+  enumComment: "TCO 20: Detail Rigging - clone a Tier 5+ iconic weapon once per weapon type"
+  loc_name_key: LocKey#TCO-Perk20-Name
+  loc_desc_key: LocKey#TCO-Perk20-Desc
+  perkIcon: UIIcon.Crafting_Area_04_Perk_1
+  category: NewPerks.SimpleNewPerkCategory
+  slot: NewPerks.Right_Perk_2_3
+  requiresPerks: [ NewPerks.TCO_Tech_Removable ]
+  tier: NewPerks.MasterNewPerkTier
+  attribute: NewPerks.TechnicalAbilityAttributeData
+  levels:
+    - loc_desc_key: LocKey#TCO-Perk20-Desc

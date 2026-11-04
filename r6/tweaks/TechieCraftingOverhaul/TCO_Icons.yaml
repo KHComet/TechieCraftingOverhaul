@@ -1,0 +1,41 @@
+# ============================================================================
+# Techie Crafting Overhaul - 특전 아이콘 (선택)
+#
+# 특전 아이콘은 NewPerk.perkIcon 이 가리키는 UIIcon 레코드로 정해집니다.
+# UIIcon 레코드는 두 값뿐입니다: atlasResourcePath (.inkatlas 경로) + atlasPartName (아틀라스 안의 조각 이름).
+# 바닐라 2.0 특전 아이콘은 모두 base\gameplay\gui\common\icons\perks\perks_icons.inkatlas 안에 있고,
+# 흰색 실루엣 + 투명 배경이며 UI 상태(잠김/구매 가능/구매)에 따라 게임이 색을 입힙니다.
+#
+# 기본값(TCO_Perks.yaml)은 바닐라 아이콘을 재사용합니다. 커스텀 아이콘을 쓰려면:
+#   1. WolvenKit 로 PNG -> .xbm + .inkatlas 를 만들어 .archive 로 묶고 archive/pc/mod/ 에 넣는다 (README "Custom perk icons" 참조)
+#   2. 아래 UIIcon 레코드의 주석을 풀고 경로/조각 이름을 맞춘다
+#   3. perkIcon 재지정 줄의 주석을 푼다
+# ============================================================================
+
+# --- 커스텀 아이콘 레코드 (주석 해제 후 사용) ---------------------------------------
+#UIIcon.TCO_Perk9:
+#  $type: UIIcon
+#  atlasResourcePath: mod\tco\tco_perk_icons.inkatlas
+#  atlasPartName: tco_perk9
+#
+#UIIcon.TCO_Perk15:
+#  $type: UIIcon
+#  atlasResourcePath: mod\tco\tco_perk_icons.inkatlas
+#  atlasPartName: tco_perk15
+#
+#UIIcon.TCO_Perk20:
+#  $type: UIIcon
+#  atlasResourcePath: mod\tco\tco_perk_icons.inkatlas
+#  atlasPartName: tco_perk20
+
+# --- 특전에 아이콘 연결 (주석 해제 후 사용) -----------------------------------------
+#NewPerks.TCO_Tech_Johnny.perkIcon: UIIcon.TCO_Perk9
+#NewPerks.TCO_Tech_Removable.perkIcon: UIIcon.TCO_Perk15
+#NewPerks.TCO_Tech_Rigging.perkIcon: UIIcon.TCO_Perk20
+
+# --- 바닐라 아이콘으로 바꾸고 싶을 때 (예시) ------------------------------------------
+# 바닐라 레코드 이름은 CDPR tweak 소스 ui/icons/perks/*.tweak, ui/icons/new_perks/*.tweak 에 있습니다.
+#   UIIcon.Crafting_Area_01_Perk_1 ~ Crafting_Area_10_Perk_x   (1.x 제작 스킬 아이콘)
+#   UIIcon.Engineering_Area_02_Perk_1 ...                       (1.x 공학 스킬 아이콘)
+#   UIIcon.Tech_Central_Milestone_3, UIIcon.Tech_Right_Milestone_1, UIIcon.Tech_Master_Perk_3  (2.0 테크 아이콘)
+#NewPerks.TCO_Tech_Removable.perkIcon: UIIcon.Crafting_Area_04_Perk_2
