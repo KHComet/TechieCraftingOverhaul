@@ -38,11 +38,17 @@ public class TCO_Generator {
     let records = TweakDBInterface.GetRecords(n"WeaponItem_Record");
     let presets: array<ref<WeaponItem_Record>>;
     let iconics: array<ref<WeaponItem_Record>>;
+    let replicaExcluded = TCO_Config.ReplicaExcluded();
+    let excludedCount = 0;
     for record in records {
       let weapon = record as WeaponItem_Record;
       if IsDefined(weapon) && !this.IsExcluded(weapon) {
         if weapon.TagsContains(n"IconicWeapon") {
-          ArrayPush(iconics, weapon);
+          if ArrayContains(replicaExcluded, weapon.GetID()) {
+            excludedCount += 1;
+          } else {
+            ArrayPush(iconics, weapon);
+          }
         } else if this.IsLootable(weapon) {
           ArrayPush(presets, weapon);
         }
@@ -53,7 +59,8 @@ public class TCO_Generator {
     this.AttachPerksToTree();
     FTLog("[TCO] TweakDB generation done: " + IntToString(ArraySize(presets)) + " lootable presets, "
       + IntToString(this.m_modelCount) + " models, " + IntToString(this.m_tierRecordCount) + " tier records, "
-      + IntToString(this.m_replicaCount) + " replicas (" + IntToString(this.m_noBaseCount) + " without base weapon)");
+      + IntToString(this.m_replicaCount) + " replicas (" + IntToString(this.m_noBaseCount) + " without base weapon, "
+      + IntToString(excludedCount) + " excluded by config)");
   }
 
   // --- 특전 노드를 테크 트리에 연결 (Perk Addition Framework 가 있을 때만) -------------

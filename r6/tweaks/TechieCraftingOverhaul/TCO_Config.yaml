@@ -1,18 +1,18 @@
 # ============================================================================
-# Techie Crafting Overhaul - 설정 파일 (TweakXL YAML)
-# 이 파일의 값은 게임 시작 시 읽히며, 스크립트는 수치를 하드코딩하지 않습니다.
-# 값을 바꾼 뒤에는 게임을 다시 시작하거나 CET 콘솔에서 TweakXL.Reload() 를 실행하세요.
+# Techie Crafting Overhaul - configuration (TweakXL YAML)
+# These values are read at game start; the scripts do not hardcode them.
+# After changing a value, restart the game or run TweakXL.Reload() in the CET console.
 # ============================================================================
 
-# --- 특전 모드 ------------------------------------------------------------------
-# auto      : Perk Addition Framework 가 설치되어 있으면 테크 트리의 실제 노드(구매 필요)로,
-#             없으면 아래 능력치 임계값으로 자동 활성화
-# tree      : 항상 트리 노드로 판정 (프레임워크가 없으면 특전이 비활성)
-# attribute : 항상 능력치 임계값으로 판정 (트리에 노드를 넣지 않음)
+# --- Perk mode -----------------------------------------------------------------
+# auto      : real Tech tree nodes (must be bought) when Perk Addition Framework is installed,
+#             otherwise the attribute thresholds below
+# tree      : always tree nodes (perks stay inactive without the framework)
+# attribute : always attribute thresholds (no nodes are added to the tree)
 TCO.Config.perkMode: n"auto"
 
-# --- 특전 활성화 / 요구 테크 능력치 (attribute 모드, 또는 auto 모드의 대체 경로) ----------
-# 트리 노드 모드에서는 바닐라 티어 레코드가 요구치를 정합니다 (Adept 9 / Expert 15 / Master 20).
+# --- Perk activation / required Technical Ability (attribute mode, or the auto-mode fallback) ---
+# In tree mode the vanilla tier records set the requirement (Adept 9 / Expert 15 / Master 20).
 TCO.Config.perk9Enabled: true
 TCO.Config.perk15Enabled: true
 TCO.Config.perk20Enabled: true
@@ -20,26 +20,30 @@ TCO.Config.perk9Attribute: 9
 TCO.Config.perk15Attribute: 15
 TCO.Config.perk20Attribute: 20
 
-# --- 20 특전 (Detail Rigging, 아이코닉 복제) ----------------------------------
-# 복제에 소모되는 아이템 부품(티어 5 = Legendary)과 수량
+# --- Perk 20 (Detail Rigging, iconic replication) ------------------------------
+# Item component consumed by replication (Tier 5 = Legendary) and amount
 TCO.Config.replicaMaterialItem: t"Items.LegendaryMaterial1"
 TCO.Config.replicaMaterialAmount: 200
-# 원본·기반 무기의 최소 티어 (EffectiveTier 스탯: 8 = 티어5, 9 = 티어5+, 10 = 티어5++)
+# Minimum tier of the original and the base weapon (EffectiveTier stat: 8 = Tier 5, 9 = Tier 5+, 10 = Tier 5++)
 TCO.Config.replicaRequiredTier: 8
-# 레플리카 분해 허용 여부 (바닐라 2.x 는 아이코닉 분해 불가, 레플리카만 예외 허용)
+# Allow disassembling replicas (vanilla 2.x blocks iconic disassembly; replicas are the only exception)
 TCO.Config.replicaDisassembleAllowed: true
+# Iconic weapons that get no replica (no spec is generated). Default: both Skippy variants.
+#   Skippy's voice, mode switching and quest hand-in are quest scripting bound to the original item and do not carry over to a copy.
+#   Add any weapon (modded ones too) you want excluded for the same reason, as t"Items.<record>".
+TCO.Config.replicaExcluded: [ t"Items.Preset_Yukimura_Skippy", t"Items.Preset_Yukimura_Skippy_PostQuest" ]
 
-# --- 9 특전 (If Johnny Were a Techie..., 레시피 습득) --------------------------
-# 분해한 무기에서 배우는 티어 범위
-#   equal : 분해한 무기와 같은 티어 하나만 (기본, 티어2 무기를 분해하면 티어2 도안)
-#   upto  : 분해한 무기 티어 이하 전부
-#   all   : 티어1 ~ 티어5++ 전부
+# --- Perk 9 (If Johnny Were a Techie..., spec learning) -------------------------
+# Tier range learned from a disassembled weapon
+#   equal : only the tier of the disassembled weapon (default: a Tier 2 weapon gives a Tier 2 spec)
+#   upto  : that tier and everything below
+#   all   : Tier 1 to Tier 5++
 TCO.Config.recipeTierMode: n"equal"
-# 제작 비용은 설정이 아니라 바닐라 레코드에서 읽습니다:
-#   티어 1~5 (플러스 포함) = 같은 등급의 바닐라 레시피 비용 (Items.Small_<등급>_Crafting_Materials_Weapon, 부품 30개)
-#   티어 5+  = 티어 5 비용 + Upgrading.Legendary     (아이코닉 5 -> 5+ 강화 비용, 티어 5 부품 75개)
-#   티어 5++ = 티어 5+ 비용 + Upgrading.LegendaryPlus (아이코닉 5+ -> 5++ 강화 비용, 티어 5 부품 200개)
+# Crafting costs are not configured here; they are read from vanilla records:
+#   Tier 1-5 (plus variants included) = vanilla spec cost of the same quality (Items.Small_<Quality>_Crafting_Materials_Weapon, 30 components)
+#   Tier 5+  = Tier 5 cost + Upgrading.Legendary     (iconic 5 -> 5+ upgrade, 75 Tier 5 components)
+#   Tier 5++ = Tier 5+ cost + Upgrading.LegendaryPlus (iconic 5+ -> 5++ upgrade, 200 Tier 5 components)
 
-# --- 기타 ---------------------------------------------------------------------
+# --- Misc ----------------------------------------------------------------------
 TCO.Config.notifications: true
 TCO.Config.debugLog: false

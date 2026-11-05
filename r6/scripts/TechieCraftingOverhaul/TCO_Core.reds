@@ -32,6 +32,7 @@ public abstract class TCO_Config {
   public static func Perk15Attribute() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.perk15Attribute", 15); }
   public static func Perk20Attribute() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.perk20Attribute", 20); }
   public static func ReplicaMaterialItem() -> TweakDBID { return TweakDBInterface.GetForeignKey(t"TCO.Config.replicaMaterialItem", t"Items.LegendaryMaterial1"); }
+  public static func ReplicaExcluded() -> array<TweakDBID> { return TweakDBInterface.GetForeignKeyArray(t"TCO.Config.replicaExcluded"); }
   public static func ReplicaMaterialAmount() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.replicaMaterialAmount", 200); }
   public static func ReplicaRequiredTier() -> Float { return Cast<Float>(TweakDBInterface.GetInt(t"TCO.Config.replicaRequiredTier", 8)); }
   public static func ReplicaDisassembleAllowed() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.replicaDisassembleAllowed", true); }

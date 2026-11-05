@@ -1,24 +1,24 @@
 # ============================================================================
-# Techie Crafting Overhaul - 9 특전 모델(외형) 매핑 테이블
+# Techie Crafting Overhaul - model (skin) map for perk 9
 #
-# 일반 무기를 분해하면 "그 무기 모델"의 레시피를 배웁니다. 모델 결정 순서:
-#   1. 분해한 프리셋 레코드 이름에 _Default 가 있으면 그 프리셋
-#   2. 아래 테이블(TCO.ModelMap.<프리셋 레코드>)에 지정된 프리셋
-#   3. 같은 이름(displayName)을 가진 프리셋 중 *_Default 프리셋
-#   4. 모두 없으면 분해한 프리셋 그대로
+# Disassembling a normal weapon teaches the spec of "that weapon model". Model resolution order:
+#   1. the disassembled preset itself if its record name contains _Default
+#   2. the preset listed in this table (TCO.ModelMap.<preset record>)
+#   3. a *_Default preset with the same display name
+#   4. otherwise the disassembled preset as is
 #
-# 형식: 키 = "TCO.ModelMap." + 분해되는 프리셋 레코드 ID
-#       craftableItem 의 첫 항목 = 레시피로 등록할(제작될) 프리셋
-# 모드 무기도 같은 방식으로 추가할 수 있습니다.
+# Format: key = "TCO.ModelMap." + record ID of the disassembled preset
+#         first entry of craftableItem = the preset registered as the spec (the crafted item)
+# Modded weapons can be added the same way.
 # ============================================================================
 
-# 예시: NPC 전용 소음기 렉싱턴을 분해하면 일반 렉싱턴 레시피를 배움
+# Example: disassembling the NPC-only silenced Lexington teaches the normal Lexington spec
 TCO.ModelMap.Items.Silenced_Lexington:
   $type: Craftable
   craftableItem: [ Items.Preset_Lexington_Default ]
 
-# 예시: 아라사카 2020 누에(Arasaka Nue 2020)는 일반 누에와 성능이 달라 자체 모델로 둠
-# (별도 지정이 없으면 규칙 4 에 따라 자기 자신이 모델이 되므로 아래는 명시적 선언일 뿐입니다)
+# Example: the Arasaka Nue 2020 differs from the normal Nue in stats, so it keeps its own model
+# (without an entry it would be its own model by rule 4 anyway; the line below is only an explicit declaration)
 TCO.ModelMap.Items.Preset_Nue_Arasaka_2020:
   $type: Craftable
   craftableItem: [ Items.Preset_Nue_Arasaka_2020 ]

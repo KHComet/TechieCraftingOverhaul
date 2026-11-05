@@ -1,14 +1,14 @@
 # ============================================================================
-# Techie Crafting Overhaul - 20 특전 기반 무기 매핑 테이블 (바닐라 전체)
+# Techie Crafting Overhaul - base weapon map for perk 20 (all vanilla iconics)
 #
-# 아이코닉 복제에 소모되는 "기반 무기"를 지정합니다. 결정 순서:
-#   1. 아래 테이블(TCO.BaseMap.<아이코닉 레코드>)에 지정된 무기 (우선)
-#   2. 자동: 같은 무기 종류(itemType)와 같은 friendlyName 을 가진 일반 *_Default 프리셋
+# Defines the "base weapon" consumed when replicating an iconic. Resolution order:
+#   1. the weapon listed in this table (TCO.BaseMap.<iconic record>) - takes priority
+#   2. automatic: a normal *_Default preset with the same weapon type (itemType) and friendlyName
 #
-# 형식: 키 = "TCO.BaseMap." + 아이코닉 레코드 ID, craftableItem = 기반 무기 목록 (1개 이상)
-#       같은 무기를 두 번 적으면 2자루가 필요합니다.
-# 바닐라 아이코닉은 모두 명시해 두었으므로 자동 매칭은 모드 무기에만 쓰입니다.
-# 게임 데이터(CDPR 2.5 tweak 소스)를 기준으로 생성했으며, 기반 무기는 자유롭게 바꿔도 됩니다.
+# Format: key = "TCO.BaseMap." + iconic record ID, craftableItem = list of base weapons (one or more)
+#         listing the same weapon twice requires two of them.
+# Every vanilla iconic is listed explicitly, so automatic matching only applies to modded weapons.
+# Generated from the game data (CDPR 2.5 tweak sources). Feel free to change the base weapons.
 # ============================================================================
 
 # --- base_handguns_chao/preset_base_chao ---
@@ -42,12 +42,12 @@ TCO.BaseMap.Items.Preset_Lexington_Rook:  # Wea_Handgun
 TCO.BaseMap.Items.Preset_Lexington_Shooting_Competition:  # Wea_Handgun
   $type: Craftable
   craftableItem: [ Items.Preset_Lexington_Default ]
-# 다잉 나이트 (Dying Night)
-TCO.BaseMap.Items.Preset_Lexington_Wilson:  # Wea_Handgun (수동 지정)
+# Dying Night
+TCO.BaseMap.Items.Preset_Lexington_Wilson:  # Wea_Handgun (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Lexington_Default ]
-# 다잉 나이트 퀘스트 변형
-TCO.BaseMap.Items.Preset_Q001_Lexington:  # Wea_Handgun (수동 지정)
+# Dying Night (quest variant)
+TCO.BaseMap.Items.Preset_Q001_Lexington:  # Wea_Handgun (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Lexington_Default ]
 
@@ -136,14 +136,14 @@ TCO.BaseMap.Items.Preset_Baseball_Bat_Malina:  # Wea_TwoHandedClub
   craftableItem: [ Items.Preset_Baseball_Bat_Default ]
 
 # --- base_melee/preset_baton ---
-# 머피의 법칙 (Murphy's Law) - 부모 프리셋인 바톤 감마 지정
-TCO.BaseMap.Items.Preset_Baton_Murphy:  # Wea_OneHandedClub (수동 지정)
+# Murphy's Law - parent preset: Baton Gamma
+TCO.BaseMap.Items.Preset_Baton_Murphy:  # Wea_OneHandedClub (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Baton_Gamma ]
 
 # --- base_melee/preset_cane ---
-# 코튼마우스 (핑거스의 지팡이) - 한손 둔기 중 바톤 지정
-TCO.BaseMap.Items.Preset_Cane_Fingers:  # Wea_OneHandedClub (수동 지정)
+# Cottonmouth (Fingers' cane) - one-handed club: Baton
+TCO.BaseMap.Items.Preset_Cane_Fingers:  # Wea_OneHandedClub (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Baton_Alpha ]
 
@@ -153,12 +153,12 @@ TCO.BaseMap.Items.Preset_Chainsword_Legendary:  # Wea_Chainsword
   craftableItem: [ Items.Preset_Chainsword_Default ]
 
 # --- base_melee/preset_dildo ---
-# 서 존 팔루스티프 (상점판)
-TCO.BaseMap.Items.Preset_Dildo_SexShop:  # Wea_OneHandedClub (수동 지정)
+# Sir John Phallustiff (shop version)
+TCO.BaseMap.Items.Preset_Dildo_SexShop:  # Wea_OneHandedClub (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Baton_Alpha ]
-# 서 존 팔루스티프 - 한손 둔기 중 바톤 지정
-TCO.BaseMap.Items.Preset_Dildo_Stout:  # Wea_OneHandedClub (수동 지정)
+# Sir John Phallustiff - one-handed club: Baton
+TCO.BaseMap.Items.Preset_Dildo_Stout:  # Wea_OneHandedClub (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Baton_Alpha ]
 
@@ -195,8 +195,8 @@ TCO.BaseMap.Items.Preset_Sword_Witcher:  # Wea_Sword
   craftableItem: [ Items.Preset_Katana_Default ]
 
 # --- base_melee/preset_knife ---
-# 정육점 칼 아이코닉 - 일반 정육점 칼 지정
-TCO.BaseMap.Items.Preset_Butchers_Knife_Iconic:  # Wea_LongBlade (수동 지정)
+# Butcher's Knife iconic - normal Butcher's Knife
+TCO.BaseMap.Items.Preset_Butchers_Knife_Iconic:  # Wea_LongBlade (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Butchers_Knife_Default ]
 TCO.BaseMap.Items.Preset_Knife_Stinger:  # Wea_Knife
@@ -218,8 +218,8 @@ TCO.BaseMap.Items.Preset_Machete_Borg_AirDrop:  # Wea_Machete
   craftableItem: [ Items.Preset_Machete_Borg_Default ]
 
 # --- base_melee/preset_one_hand_blunts ---
-# 팅커벨 - 바톤 알파 지정
-TCO.BaseMap.Items.Preset_Baton_Tinker_Bell:  # Wea_OneHandedClub (수동 지정)
+# Tinker Bell - Baton Alpha
+TCO.BaseMap.Items.Preset_Baton_Tinker_Bell:  # Wea_OneHandedClub (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Baton_Alpha ]
 TCO.BaseMap.Items.Preset_Crowbar_Bunker:  # Wea_OneHandedClub
@@ -227,12 +227,12 @@ TCO.BaseMap.Items.Preset_Crowbar_Bunker:  # Wea_OneHandedClub
   craftableItem: [ Items.Preset_Crowbar_Default ]
 
 # --- base_melee/preset_shovel ---
-# 케어테이커의 삽 - 양손 둔기 계열 없음: 해머 지정
-TCO.BaseMap.Items.Preset_Shovel_Caretaker:  # Wea_Hammer (수동 지정)
+# Caretaker's Spade - no two-handed blunt family: Hammer
+TCO.BaseMap.Items.Preset_Shovel_Caretaker:  # Wea_Hammer (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Hammer_Default ]
-# 케어테이커의 삽 (창고 지급판)
-TCO.BaseMap.Items.Preset_Shovel_Caretaker_Stash:  # Wea_Hammer (수동 지정)
+# Caretaker's Spade (stash version)
+TCO.BaseMap.Items.Preset_Shovel_Caretaker_Stash:  # Wea_Hammer (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Hammer_Default ]
 
@@ -270,8 +270,8 @@ TCO.BaseMap.Items.Preset_Overture_River:  # Wea_Revolver
   craftableItem: [ Items.Preset_Overture_Default ]
 
 # --- base_revolvers_malorian_silverhand/preset_malorian_silverhand ---
-# 말로리안 암즈 3516 (조니) - 전용 계열 없음: 타마유라(Kenshin) + 오버추어
-TCO.BaseMap.Items.Preset_Silverhand_3516:  # Wea_Handgun (수동 지정)
+# Malorian Arms 3516 (Johnny) - no dedicated family: Tamayura (Kenshin) + Overture
+TCO.BaseMap.Items.Preset_Silverhand_3516:  # Wea_Handgun (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Kenshin_Default, Items.Preset_Overture_Default ]
 
@@ -467,8 +467,8 @@ TCO.BaseMap.Items.Preset_Ticon_Reed:  # Wea_Handgun
 TCO.BaseMap.Items.Preset_Metel_AirDrop:  # Wea_Revolver
   $type: Craftable
   craftableItem: [ Items.Preset_Metel_Default ]
-# 커트의 메텔 (Rosco)
-TCO.BaseMap.Items.Preset_Metel_Kurt:  # Wea_Revolver (수동 지정)
+# Kurt's Metel (Rosco)
+TCO.BaseMap.Items.Preset_Metel_Kurt:  # Wea_Revolver (manual)
   $type: Craftable
   craftableItem: [ Items.Preset_Metel_Default ]
 
