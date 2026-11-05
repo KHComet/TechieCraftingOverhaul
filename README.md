@@ -147,3 +147,7 @@ r6/tweaks/TechieCraftingOverhaul/
 - Game scripts and tweak sources: CDPR REDmod sources (CDPR-Modding-Documentation/Cyberpunk-Scripts, Cyberpunk-Tweaks, v2.5)
 - Perk enum extension: [Perk Addition Framework](https://www.nexusmods.com/cyberpunk2077/mods/22758) by JonnesTT ([GitHub](https://github.com/JonnesTT/Cyberpunk_PerkAdditionFramework))
 - TweakXL / Codeware: psiberx
+
+## License
+
+CC0 1.0 (public domain). Use, modify and redistribute freely, no attribution required. Full text in [LICENSE](LICENSE).

@@ -147,3 +147,7 @@ r6/tweaks/TechieCraftingOverhaul/
 - 게임 스크립트·tweak 소스: CDPR REDmod 소스 (CDPR-Modding-Documentation/Cyberpunk-Scripts, Cyberpunk-Tweaks, v2.5)
 - 특전 enum 확장: [Perk Addition Framework](https://www.nexusmods.com/cyberpunk2077/mods/22758) (JonnesTT, [GitHub](https://github.com/JonnesTT/Cyberpunk_PerkAdditionFramework))
 - TweakXL / Codeware: psiberx
+
+## 라이선스
+
+CC0 1.0 (퍼블릭 도메인). 출처 표기 없이 자유롭게 사용·수정·재배포할 수 있습니다. 전문은 [LICENSE](LICENSE) 에 있습니다.
