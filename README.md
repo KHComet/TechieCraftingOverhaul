@@ -86,7 +86,7 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 - Cost: base weapon + the configured Tier 5 components.
 - The original is kept, the base weapon is consumed (treated as disassembly, mods recovered) and the replica is granted. The replica matches the original's upgrade count, quality, plus stats and unique effects.
 - The replication log (once per weapon type) is stored in the save and is not reset by disassembling the replica.
-- Replicas can be disassembled despite the iconic tag (`replicaDisassembleAllowed`).
+- Replicas cannot be disassembled by default, like any iconic. `replicaDisassembleAllowed: true` makes them the one exception.
 
 ### Base weapon map (`TCO_BaseWeaponMap.yaml`)
 
@@ -109,7 +109,7 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 | `replicaMaterialItem` | `Items.LegendaryMaterial1` | Component consumed by replication |
 | `replicaMaterialAmount` | 200 | Component amount |
 | `replicaRequiredTier` | 8 | Minimum EffectiveTier of original and base weapon (8 = Tier 5, 9 = 5+, 10 = 5++) |
-| `replicaDisassembleAllowed` | true | Allow disassembling replicas |
+| `replicaDisassembleAllowed` | false | Allow disassembling replicas |
 | `replicaExcluded` | Skippy, Erebus, the sniper-nest Rasetsu | Iconic weapons that get no replica spec |
 | `recipeTierMode` | equal | Perk 9 scope: `equal` same tier / `upto` same and lower / `all` |
 | `notifications` | true | On-screen notifications |

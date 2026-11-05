@@ -26,8 +26,9 @@ TCO.Config.replicaMaterialItem: t"Items.LegendaryMaterial1"
 TCO.Config.replicaMaterialAmount: 200
 # Minimum tier of the original and the base weapon (EffectiveTier stat: 8 = Tier 5, 9 = Tier 5+, 10 = Tier 5++)
 TCO.Config.replicaRequiredTier: 8
-# Allow disassembling replicas (vanilla 2.x blocks iconic disassembly; replicas are the only exception)
-TCO.Config.replicaDisassembleAllowed: true
+# Allow disassembling replicas. Off by default: a replica exists to be used like the iconic it copies,
+# and vanilla 2.x blocks iconic disassembly anyway. Set to true to make replicas the one exception.
+TCO.Config.replicaDisassembleAllowed: false
 # Iconic weapons that get no replica (no spec is generated).
 #   Skippy: voice lines, mode switching and the quest hand-in are quest scripting bound to the original item.
 #   Erebus (Borg4a_HauntedGun and its quality variants): the Blackwall haunting raises quest facts on reload and kills.

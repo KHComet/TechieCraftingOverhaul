@@ -86,7 +86,7 @@ Cyberpunk 2077/
 - 비용 : 기반 무기 + 설정된 티어 5 부품
 - 원본은 유지, 기반 무기 소모(분해 판정, 개조부품 회수) 후 레플리카를 지급합니다. 레플리카의 업그레이드 횟수·등급·플러스 스탯·고유 효과는 원본과 동일합니다.
 - 복제 기록(무기 종류당 1회)은 세이브에 저장되며 레플리카를 분해해도 초기화되지 않습니다.
-- 레플리카는 신화 태그가 있어도 분해할 수 있습니다(`replicaDisassembleAllowed`).
+- 레플리카는 다른 신화 무기처럼 기본적으로 분해할 수 없습니다. `replicaDisassembleAllowed: true` 로 바꾸면 레플리카만 예외로 분해할 수 있습니다.
 
 ### 기반 무기 매핑 (`TCO_BaseWeaponMap.yaml`)
 
@@ -109,7 +109,7 @@ Cyberpunk 2077/
 | `replicaMaterialItem` | `Items.LegendaryMaterial1` | 복제에 소모되는 부품 |
 | `replicaMaterialAmount` | 200 | 부품 수량 |
 | `replicaRequiredTier` | 8 | 원본·기반 무기의 최소 EffectiveTier (8 = 티어 5, 9 = 5+, 10 = 5++) |
-| `replicaDisassembleAllowed` | true | 레플리카 분해 허용 |
+| `replicaDisassembleAllowed` | false | 레플리카 분해 허용 |
 | `replicaExcluded` | 스키피, 에레부스, 저격 둥지 라세츠 | 레플리카를 만들지 않을 신화 무기 목록 |
 | `recipeTierMode` | equal | 9 특전 습득 범위: `equal` 같은 티어 / `upto` 이하 전부 / `all` 전부 |
 | `notifications` | true | 화면 알림 |
