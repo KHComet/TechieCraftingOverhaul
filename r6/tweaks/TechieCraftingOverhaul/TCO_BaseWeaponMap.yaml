@@ -270,10 +270,10 @@ TCO.BaseMap.Items.Preset_Overture_River:  # Wea_Revolver
   craftableItem: [ Items.Preset_Overture_Default ]
 
 # --- base_revolvers_malorian_silverhand/preset_malorian_silverhand ---
-# Malorian Arms 3516 (Johnny) - no dedicated family: Tamayura (Kenshin) + Overture
+# Malorian Arms 3516 (Johnny) - no dedicated family: Overture
 TCO.BaseMap.Items.Preset_Silverhand_3516:  # Wea_Handgun (manual)
   $type: Craftable
-  craftableItem: [ Items.Preset_Kenshin_Default, Items.Preset_Overture_Default ]
+  craftableItem: [ Items.Preset_Overture_Default ]
 
 # --- base_revolvers_nova/preset_base_nova ---
 TCO.BaseMap.Items.Preset_Nova_Doom_Doom:  # Wea_Revolver
@@ -499,3 +499,15 @@ TCO.BaseMap.Items.Preset_Warden_Amazon:  # Wea_SubmachineGun
 TCO.BaseMap.Items.Preset_Warden_Boris:  # Wea_SubmachineGun
   $type: Craftable
   craftableItem: [ Items.Preset_Warden_Default ]
+
+# --- Per-weapon cost override (optional) ----------------------------------------
+# A CraftingPackage named TCO.ReplicaCost.<iconic record> replaces the preset (TCO.Config.replicaPreset) for that weapon.
+# Weapon ingredients are consumed as base weapons (the iconic itself is allowed, which makes a per-weapon "fusion"),
+# everything else is consumed as components. The amount of a weapon ingredient is how many of it are needed.
+# Example: Malorian Arms 3516 from a Tamayura, an Overture and 100 Tier 5 components (uncomment to use):
+#TCO.ReplicaCost.Items.Preset_Silverhand_3516:
+#  $type: CraftingPackage
+#  craftingRecipe:
+#    - { ingredient: Items.Preset_Kenshin_Default, amount: 1 }
+#    - { ingredient: Items.Preset_Overture_Default, amount: 1 }
+#    - { ingredient: Items.LegendaryMaterial1, amount: 100 }

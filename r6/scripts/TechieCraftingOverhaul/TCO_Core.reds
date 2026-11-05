@@ -33,7 +33,24 @@ public abstract class TCO_Config {
   public static func Perk20Attribute() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.perk20Attribute", 20); }
   public static func ReplicaMaterialItem() -> TweakDBID { return TweakDBInterface.GetForeignKey(t"TCO.Config.replicaMaterialItem", t"Items.LegendaryMaterial1"); }
   public static func ReplicaExcluded() -> array<TweakDBID> { return TweakDBInterface.GetForeignKeyArray(t"TCO.Config.replicaExcluded"); }
-  public static func ReplicaMaterialAmount() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.replicaMaterialAmount", 200); }
+  // 레플리카 비용 프리셋: base(기반 무기 + 부품) / parts(부품만) / fusion(원본 2개 추가 소모, 부품 없음) / custom(아래 개별 값)
+  public static func ReplicaPreset() -> CName { return TweakDBInterface.GetCName(t"TCO.Config.replicaPreset", n"base"); }
+  public static func ReplicaUseBaseWeapon() -> Bool {
+    let preset = TCO_Config.ReplicaPreset();
+    if Equals(preset, n"parts") || Equals(preset, n"fusion") { return false; }
+    if Equals(preset, n"custom") { return TweakDBInterface.GetBool(t"TCO.Config.replicaUseBaseWeapon", true); }
+    return true;
+  }
+  public static func ReplicaOriginalCopies() -> Int32 {
+    let preset = TCO_Config.ReplicaPreset();
+    if Equals(preset, n"fusion") { return 2; }
+    if Equals(preset, n"custom") { return Max(0, TweakDBInterface.GetInt(t"TCO.Config.replicaOriginalCopies", 0)); }
+    return 0;
+  }
+  public static func ReplicaMaterialAmount() -> Int32 {
+    if Equals(TCO_Config.ReplicaPreset(), n"fusion") { return 0; }
+    return Max(0, TweakDBInterface.GetInt(t"TCO.Config.replicaMaterialAmount", 200));
+  }
   public static func ReplicaRequiredTier() -> Float { return Cast<Float>(TweakDBInterface.GetInt(t"TCO.Config.replicaRequiredTier", 8)); }
   public static func ReplicaDisassembleAllowed() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.replicaDisassembleAllowed", false); }
   public static func RecipeTierMode() -> CName { return TweakDBInterface.GetCName(t"TCO.Config.recipeTierMode", n"equal"); }
@@ -183,15 +200,20 @@ public static func TCO_IsOriginalIconic(itemData: wref<gameItemData>) -> Bool {
 //   2) 9 특전 티어 레코드(<모델>_TCO_T*)의 TCO_model 이 기반 무기와 같다 (9 특전으로 제작한 무기)
 //   3) 같은 무기 종류 + 같은 표시 이름의 일반 무기 (외형 변형 Pimp/Neon/Military, 바닐라 Craftable_* 제작품 등)
 //   아이코닉과 레플리카는 기반 무기가 될 수 없다.
+//   4) 기반 무기가 신화 무기인 경우(fusion 프리셋, 무기별 비용 재정의): 같은 표시 이름의 신화 무기 (등급 변형 포함). 레플리카는 제외.
 public static func TCO_IsBaseModelInstance(itemData: wref<gameItemData>, baseID: TweakDBID) -> Bool {
   if !IsDefined(itemData) || !TDBID.IsValid(baseID) { return false; }
   let recordID = ItemID.GetTDBID(itemData.GetID());
+  if itemData.HasTag(n"TCO_Replica") { return false; }
   if recordID == baseID { return true; }
   if TweakDBInterface.GetForeignKey(recordID + t".TCO_model", TDBID.None()) == baseID { return true; }
-  if itemData.HasTag(n"IconicWeapon") || itemData.HasTag(n"TCO_Replica") { return false; }
   let record = TweakDBInterface.GetItemRecord(recordID);
   let base = TweakDBInterface.GetItemRecord(baseID);
   if !IsDefined(record) || !IsDefined(base) { return false; }
+  if base.TagsContains(n"IconicWeapon") {
+    return itemData.HasTag(n"IconicWeapon") && Equals(record.DisplayName(), base.DisplayName());
+  }
+  if itemData.HasTag(n"IconicWeapon") { return false; }
   return Equals(record.ItemType().Type(), base.ItemType().Type())
     && Equals(record.DisplayName(), base.DisplayName());
 }

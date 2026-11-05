@@ -82,22 +82,30 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 - When the crafting menu opens, a replica spec appears for every Tier 5+ original iconic in the inventory (perk active, type not yet replicated). It is hidden when the original leaves the inventory or the type has been replicated.
 - Crafting conditions (all): perk active / original owned (Tier 5+) / base weapon(s) owned when a mapping exists (Tier 5+, one per mapping entry, not equipped, not quest items) / configured component amount / weapon type not yet replicated / original is not itself a replica. Iconics without any base mapping cost components only.
 - A base weapon counts if it has the same weapon type and display name and is not iconic.
-- When a weapon needs two base weapons (Malorian Arms 3516: Tamayura + Overture), the second one is shown as a regular ingredient row.
-- Cost: base weapon + the configured Tier 5 components.
+- Recipes with two or more weapon ingredients, or several copies of one weapon, show the extra weapons (or the counted weapon) as regular ingredient rows with their counts.
+- The cost is set by a preset (`replicaPreset`).
+
+  | Preset | Cost |
+  |---|---|
+  | `base` (default) | base weapon + 200 Tier 5 components |
+  | `parts` | 200 Tier 5 components, no base weapon |
+  | `fusion` | two extra copies of the same original iconic (one original is kept, no components) |
+  | `custom` | the individual knobs (base weapon on/off, extra originals, component amount) |
 - The original is kept, the base weapon is consumed (treated as disassembly, mods recovered) and the replica is granted. The replica matches the original's upgrade count, quality, plus stats and unique effects.
 - The replication log (once per weapon type) is stored in the save and is not reset by disassembling the replica.
 - Replicas cannot be disassembled by default, like any iconic. `replicaDisassembleAllowed: true` makes them the one exception.
 
 ### Base weapon map (`TCO_BaseWeaponMap.yaml`)
 
-- 119 vanilla iconic entries generated from the 2.5 tweak sources. Most point to the parent preset (`Preset_<Weapon>_Default`) and can be set manually.
+- 119 vanilla iconic entries generated from the 2.5 tweak sources. Most point to the parent preset (`Preset_<Weapon>_Default`) and can be set manually. Listing two weapons requires both; listing the same weapon twice requires two of it.
 - Iconics missing from the list (modded weapons) are matched automatically: same weapon type and same `friendlyName` `_Default` preset.
 - Format:
   ```yaml
   TCO.BaseMap.Items.Preset_Silverhand_3516:
     $type: Craftable
-    craftableItem: [ Items.Preset_Kenshin_Default, Items.Preset_Overture_Default ]
+    craftableItem: [ Items.Preset_Overture_Default ]
   ```
+- Per-weapon cost override: a CraftingPackage named `TCO.ReplicaCost.<iconic record>` replaces the preset for that weapon. Weapon ingredients are consumed as base weapons (the iconic itself is allowed), everything else as components. An example is at the end of `TCO_BaseWeaponMap.yaml`.
 
 ## Configuration (`TCO_Config.yaml`)
 
@@ -106,8 +114,10 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 | `perkMode` | auto | `auto`: tree nodes when Perk Addition Framework is present, attribute thresholds otherwise. `tree` / `attribute` force a mode. |
 | `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | Per-perk toggle |
 | `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | Technical Ability required in attribute mode (tree mode uses vanilla tiers 9/15/20) |
+| `replicaPreset` | base | Replica cost preset: `base` / `parts` / `fusion` / `custom` |
+| `replicaUseBaseWeapon` / `replicaOriginalCopies` | true / 0 | `custom` preset knobs: require base weapon, extra originals consumed |
 | `replicaMaterialItem` | `Items.LegendaryMaterial1` | Component consumed by replication |
-| `replicaMaterialAmount` | 200 | Component amount |
+| `replicaMaterialAmount` | 200 | Component amount (`base` / `parts` / `custom`) |
 | `replicaRequiredTier` | 8 | Minimum EffectiveTier of original and base weapon (8 = Tier 5, 9 = 5+, 10 = 5++) |
 | `replicaDisassembleAllowed` | false | Allow disassembling replicas |
 | `replicaExcluded` | Skippy, Erebus, the sniper-nest Rasetsu | Iconic weapons that get no replica spec |

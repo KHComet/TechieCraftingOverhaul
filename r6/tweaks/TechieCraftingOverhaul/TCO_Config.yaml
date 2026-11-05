@@ -21,9 +21,22 @@ TCO.Config.perk15Attribute: 15
 TCO.Config.perk20Attribute: 20
 
 # --- Perk 20 (Detail Rigging, iconic replication) ------------------------------
-# Item component consumed by replication (Tier 5 = Legendary) and amount
+# Replica cost preset:
+#   base   : mapped base weapon(s) from TCO_BaseWeaponMap.yaml + components   (default)
+#   parts  : components only, no base weapon
+#   fusion : two extra copies of the original iconic, no base weapon, no components ("merge three into one")
+#   custom : the three knobs below as written
+TCO.Config.replicaPreset: n"base"
+# Knobs for the "custom" preset (base / parts / fusion set them on their own):
+#   replicaUseBaseWeapon  : require the mapped base weapon(s)
+#   replicaOriginalCopies : extra copies of the original iconic consumed (the original itself is always kept)
+TCO.Config.replicaUseBaseWeapon: true
+TCO.Config.replicaOriginalCopies: 0
+# Component consumed by replication (Tier 5 = Legendary) and amount. The amount applies to base / parts / custom.
 TCO.Config.replicaMaterialItem: t"Items.LegendaryMaterial1"
 TCO.Config.replicaMaterialAmount: 200
+# Per-weapon override: a CraftingPackage named TCO.ReplicaCost.<iconic record> replaces the preset for that weapon.
+# Example at the end of TCO_BaseWeaponMap.yaml.
 # Minimum tier of the original and the base weapon (EffectiveTier stat: 8 = Tier 5, 9 = Tier 5+, 10 = Tier 5++)
 TCO.Config.replicaRequiredTier: 8
 # Allow disassembling replicas. Off by default: a replica exists to be used like the iconic it copies,

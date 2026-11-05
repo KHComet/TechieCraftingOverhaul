@@ -47,13 +47,17 @@ private final func SetupIngredients(ingredient: script_ref<array<IngredientData>
   i = 0;
   while i < ArraySize(list) {
     if IsDefined(list[i].id) && RPGManager.IsItemWeapon(ItemID.CreateQuery(list[i].id.GetID())) {
-      if i == lastWeapon {
+      if i == lastWeapon && list[i].quantity <= 1 {
         let state = n"Unavailable";
         if list[i].inventoryQuantity >= list[i].quantity {
           state = n"Default";
         }
         this.m_ingredientWeaponController.GetRootWidget().SetState(state);
       } else {
+        // 수량이 2 이상인 무기(원본 여러 개를 합치는 프리셋 등)는 개수가 보이도록 일반 줄로 표시하고 무기 칸은 감춘다
+        if i == lastWeapon {
+          inkCompoundRef.SetVisible(this.m_ingredientsWeaponContainer, false);
+        }
         if i < ArraySize(this.m_ingredientsControllerList) && IsDefined(this.m_ingredientsControllerList[i]) {
           let data = list[i];
           this.m_ingredientsControllerList[i].SetupData(data, this.m_tooltipsManager, itemAmount);

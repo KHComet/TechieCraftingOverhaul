@@ -82,22 +82,30 @@ Cyberpunk 2077/
 - 제작 메뉴를 열었을 때 인벤토리의 티어 5 이상 원본 신화 무기를 보유할 경우, 레플리카 레시피가 목록에 표시됩니다(특전 활성, 아직 복제하지 않은 종류). 원본이 인벤토리에서 빠지거나 그 종류를 복제하면 숨겨집니다.
 - 제작 조건(모두 충족): 특전 활성 / 원본 소지(티어 5+) / 매핑이 있는 무기는 기반 무기 소지(티어 5+, 매핑 항목 수만큼, 장착 중·퀘스트 아이템 제외) / 설정된 부품 수량 / 아직 복제하지 않은 무기 종류 / 원본이 레플리카가 아님. 기반 무기 매핑이 전혀 없는 신화 무기는 부품만 소모합니다.
 - 기반 무기는 무기 종류와 표시 이름이 같고 신화 무기가 아니면 인정됩니다.
-- 기반 무기가 둘인 무기(말로리안 암즈 3516: 타마유라 + 오버추어)는 두 번째 무기가 일반 재료 줄에 표시됩니다.
-- 비용 : 기반 무기 + 설정된 티어 5 부품
+- 무기 재료가 둘 이상이거나 같은 무기를 여러 개 요구하는 레시피는 두 번째 무기부터(또는 개수가 필요한 무기는) 일반 재료 줄에 개수와 함께 표시됩니다.
+- 비용은 프리셋(`replicaPreset`)으로 정합니다.
+
+  | 프리셋 | 비용 |
+  |---|---|
+  | `base` (기본) | 기반 무기 + 티어 5 부품 200개 |
+  | `parts` | 티어 5 부품 200개 (기반 무기 없음) |
+  | `fusion` | 같은 원본 신화 무기 2개 추가 소모 (원본 1개는 유지, 부품 없음) |
+  | `custom` | 설정의 개별 값(기반 무기 사용 여부, 원본 추가 소모 수, 부품 수량) |
 - 원본은 유지, 기반 무기 소모(분해 판정, 개조부품 회수) 후 레플리카를 지급합니다. 레플리카의 업그레이드 횟수·등급·플러스 스탯·고유 효과는 원본과 동일합니다.
 - 복제 기록(무기 종류당 1회)은 세이브에 저장되며 레플리카를 분해해도 초기화되지 않습니다.
 - 레플리카는 다른 신화 무기처럼 기본적으로 분해할 수 없습니다. `replicaDisassembleAllowed: true` 로 바꾸면 레플리카만 예외로 분해할 수 있습니다.
 
 ### 기반 무기 매핑 (`TCO_BaseWeaponMap.yaml`)
 
-- 2.5 tweak 소스에서 생성한 바닐라 신화 119개 항목. 대부분 부모 프리셋(`Preset_<무기>_Default`)이며, 수동 지정이 가능합니다.
+- 2.5 tweak 소스에서 생성한 바닐라 신화 119개 항목. 대부분 부모 프리셋(`Preset_<무기>_Default`)이며, 수동 지정이 가능합니다. 무기를 둘 이상 적으면 전부 필요하고, 같은 무기를 두 번 적으면 2개가 필요합니다.
 - 목록에 없는 신화 무기(모드 무기)는 같은 무기 종류 + 같은 `friendlyName` 의 `_Default` 프리셋으로 자동 매칭합니다.
 - 형식:
   ```yaml
   TCO.BaseMap.Items.Preset_Silverhand_3516:
     $type: Craftable
-    craftableItem: [ Items.Preset_Kenshin_Default, Items.Preset_Overture_Default ]
+    craftableItem: [ Items.Preset_Overture_Default ]
   ```
+- 무기별 비용 재정의: `TCO.ReplicaCost.<신화 무기 레코드>` 이름의 CraftingPackage 를 정의하면 그 무기는 프리셋 대신 이 레시피를 씁니다. 무기 재료는 기반 무기로(신화 무기 자체도 가능), 나머지는 부품으로 소모됩니다. 예시는 `TCO_BaseWeaponMap.yaml` 끝에 있습니다.
 
 ## 설정 (`TCO_Config.yaml`)
 
@@ -106,8 +114,10 @@ Cyberpunk 2077/
 | `perkMode` | auto | `auto`: Perk Addition Framework 가 있으면 트리 노드를 사용, 없으면 능력치에 따라 자동으로 지정됩니다. `tree` / `attribute` 로 고정 가능 |
 | `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | 특전별 on/off |
 | `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | attribute 모드에서 요구하는 테크 능력치(tree 모드는 바닐라 티어 9/15/20) |
+| `replicaPreset` | base | 레플리카 비용 프리셋: `base` / `parts` / `fusion` / `custom` |
+| `replicaUseBaseWeapon` / `replicaOriginalCopies` | true / 0 | `custom` 프리셋의 기반 무기 사용 여부, 원본 추가 소모 수 |
 | `replicaMaterialItem` | `Items.LegendaryMaterial1` | 복제에 소모되는 부품 |
-| `replicaMaterialAmount` | 200 | 부품 수량 |
+| `replicaMaterialAmount` | 200 | 부품 수량 (`base` / `parts` / `custom`) |
 | `replicaRequiredTier` | 8 | 원본·기반 무기의 최소 EffectiveTier (8 = 티어 5, 9 = 5+, 10 = 5++) |
 | `replicaDisassembleAllowed` | false | 레플리카 분해 허용 |
 | `replicaExcluded` | 스키피, 에레부스, 저격 둥지 라세츠 | 레플리카를 만들지 않을 신화 무기 목록 |

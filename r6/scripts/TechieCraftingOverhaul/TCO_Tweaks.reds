@@ -371,15 +371,31 @@ public class TCO_Generator {
       TweakDBManager.SetFlat(replicaID + t".quality", ToVariant(t"Quality.Legendary"));
       let noLootEffects: array<TweakDBID>;
       TweakDBManager.SetFlat(replicaID + t".OnLooted", ToVariant(noLootEffects));
-      let bases = this.ResolveBases(iconic, iconics, presets);
-      let hasBase = ArraySize(bases) > 0;
-      if !hasBase {
-        this.m_noBaseCount += 1;
+      // 비용: 무기별 재정의 패키지(TCO.ReplicaCost.<아이코닉>)가 있으면 그대로, 없으면 프리셋(TCO.Config.replicaPreset)대로 만든다.
+      //   base   = 매핑된 기반 무기 + 부품      parts  = 부품만
+      //   fusion = 원본 2개 추가 소모, 부품 없음   custom = 설정의 개별 값
+      // 기반 무기가 없는 아이코닉(매핑/자동 매칭 모두 실패)은 부품만으로 복제한다.
+      let bases: array<TweakDBID>;
+      let packageID = this.CustomCostPackage(iconic, iconics);
+      if TDBID.IsValid(packageID) {
+        bases = this.WeaponIngredients(packageID);
+      } else {
+        if TCO_Config.ReplicaUseBaseWeapon() {
+          bases = this.ResolveBases(iconic, iconics, presets);
+          if ArraySize(bases) == 0 {
+            this.m_noBaseCount += 1;
+          }
+        }
+        let copies = 0;
+        while copies < TCO_Config.ReplicaOriginalCopies() {
+          ArrayPush(bases, originalID);
+          copies += 1;
+        }
+        packageID = this.BuildReplicaPackage(replicaID, bases);
       }
-      // 기반 무기가 없는 아이코닉(매핑/자동 매칭 모두 실패)은 부품만으로 복제한다
-      TweakDBManager.SetFlat(replicaID + t".CraftingData", ToVariant(this.BuildReplicaPackage(replicaID, bases)));
+      TweakDBManager.SetFlat(replicaID + t".CraftingData", ToVariant(packageID));
       TweakDBManager.SetFlat(replicaID + t".TCO_bases", ToVariant(bases));
-      TweakDBManager.SetFlat(replicaID + t".TCO_hasBase", ToVariant(hasBase));
+      TweakDBManager.SetFlat(replicaID + t".TCO_hasBase", ToVariant(ArraySize(bases) > 0));
       TweakDBManager.SetFlat(replicaID + t".TCO_original", ToVariant(originalID));
       TweakDBManager.UpdateRecord(replicaID);
       TweakDBManager.SetFlat(originalID + t".TCO_replica", ToVariant(replicaID));
@@ -435,6 +451,46 @@ public class TCO_Generator {
       for item in items {
         if IsDefined(item) {
           ArrayPush(result, item.GetID());
+        }
+      }
+    }
+    return result;
+  }
+
+  // 무기별 비용 재정의: TCO.ReplicaCost.<아이코닉 레코드> CraftingPackage. 같은 표시 이름의 다른 레코드(등급 변형)에 있으면 그것을 쓴다.
+  private func CustomCostPackage(iconic: ref<WeaponItem_Record>, iconics: array<ref<WeaponItem_Record>>) -> TweakDBID {
+    let packageID = t"TCO.ReplicaCost." + iconic.GetID();
+    if IsDefined(TweakDBInterface.GetCraftingPackageRecord(packageID)) {
+      return packageID;
+    }
+    for other in iconics {
+      if !(other.GetID() == iconic.GetID()) && Equals(other.DisplayName(), iconic.DisplayName()) {
+        let otherID = t"TCO.ReplicaCost." + other.GetID();
+        if IsDefined(TweakDBInterface.GetCraftingPackageRecord(otherID)) {
+          return otherID;
+        }
+      }
+    }
+    return TDBID.None();
+  }
+
+  // 비용 패키지의 재료 중 무기(기반 무기로 소모되는 것)를 수량만큼 펼친 목록
+  private func WeaponIngredients(packageID: TweakDBID) -> array<TweakDBID> {
+    let result: array<TweakDBID>;
+    let package = TweakDBInterface.GetCraftingPackageRecord(packageID);
+    if !IsDefined(package) { return result; }
+    let elements: array<wref<RecipeElement_Record>>;
+    package.CraftingRecipe(elements);
+    for element in elements {
+      let ingredient = element.Ingredient();
+      if IsDefined(ingredient) {
+        let category = ingredient.ItemCategory();
+        if IsDefined(category) && Equals(category.Type(), gamedataItemCategory.Weapon) {
+          let n = 0;
+          while n < element.Amount() {
+            ArrayPush(result, ingredient.GetID());
+            n += 1;
+          }
         }
       }
     }
