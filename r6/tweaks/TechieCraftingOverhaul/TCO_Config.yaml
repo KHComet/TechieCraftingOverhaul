@@ -31,7 +31,7 @@ TCO.Config.replicaDisassembleAllowed: true
 # Iconic weapons that get no replica (no spec is generated).
 #   Skippy: voice lines, mode switching and the quest hand-in are quest scripting bound to the original item.
 #   Erebus (Borg4a_HauntedGun and its quality variants): the Blackwall haunting raises quest facts on reload and kills.
-#   Sniper_Nest_Version_Tech_Sniper_Rifle / Preset_Q001_Lexington: quest-only stand-ins for Rasetsu / Dying Night.
+#   Sniper_Nest_Version_Tech_Sniper_Rifle: quest-only stand-in for Rasetsu (the real one is handed over right after).
 #   Add any weapon (modded ones too) you want excluded for the same reason, as t"Items.<record>".
 TCO.Config.replicaExcluded:
   - t"Items.Preset_Yukimura_Skippy"
@@ -43,7 +43,6 @@ TCO.Config.replicaExcluded:
   - t"Items.Epic_Borg4a_HauntedGun"
   - t"Items.Legendary_Borg4a_HauntedGun"
   - t"Items.Sniper_Nest_Version_Tech_Sniper_Rifle"
-  - t"Items.Preset_Q001_Lexington"
 
 # --- Perk 9 (If Johnny Were a Techie..., spec learning) -------------------------
 # Tier range learned from a disassembled weapon

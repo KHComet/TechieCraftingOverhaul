@@ -78,7 +78,7 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 
 ### Detail Rigging (Tech 20)
 
-- A replica spec is prepared for every iconic weapon. A replica is a copy without the quest-item flag and the pickup quest reaction. Modded weapons are included. Weapons whose behaviour is bound to quest scripting (Skippy: voice lines, mode switching and the quest hand-in; Erebus: the Blackwall haunting) and quest-only stand-ins (the sniper-nest Rasetsu, the prologue Dying Night) are on the default exclusion list (`replicaExcluded`).
+- A replica spec is prepared for every iconic weapon. A replica is a copy without the quest-item flag and the pickup quest reaction. Modded weapons are included. Weapons whose behaviour is bound to quest scripting (Skippy: voice lines, mode switching and the quest hand-in; Erebus: the Blackwall haunting) and the quest-only sniper-nest Rasetsu are on the default exclusion list (`replicaExcluded`).
 - When the crafting menu opens, a replica spec appears for every Tier 5+ original iconic in the inventory (perk active, type not yet replicated). It is hidden when the original leaves the inventory or the type has been replicated.
 - Crafting conditions (all): perk active / original owned (Tier 5+) / base weapon(s) owned when a mapping exists (Tier 5+, one per mapping entry, not equipped, not quest items) / configured component amount / weapon type not yet replicated / original is not itself a replica. Iconics without any base mapping cost components only.
 - A base weapon counts if it has the same weapon type and display name and is not iconic.
@@ -110,7 +110,7 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 | `replicaMaterialAmount` | 200 | Component amount |
 | `replicaRequiredTier` | 8 | Minimum EffectiveTier of original and base weapon (8 = Tier 5, 9 = 5+, 10 = 5++) |
 | `replicaDisassembleAllowed` | true | Allow disassembling replicas |
-| `replicaExcluded` | Skippy, Erebus, two quest-only variants | Iconic weapons that get no replica spec |
+| `replicaExcluded` | Skippy, Erebus, the sniper-nest Rasetsu | Iconic weapons that get no replica spec |
 | `recipeTierMode` | equal | Perk 9 scope: `equal` same tier / `upto` same and lower / `all` |
 | `notifications` | true | On-screen notifications |
 | `debugLog` | false | `[TCO]` debug output via `FTLog` and `ModLog(n"TechieCraftingOverhaul")`, plus an on-screen summary of the replica list sync when the crafting menu opens |
