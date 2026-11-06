@@ -417,11 +417,20 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     while i < ArraySize(tiers) {
       // equal: 같은 티어만 / upto: 이하 전부 / all: 전부
       let wanted = Equals(mode, n"all") || (Equals(mode, n"upto") && i <= itemTier) || (!Equals(mode, n"all") && !Equals(mode, n"upto") && i == itemTier);
-      if wanted && !book.KnowsRecipe(tiers[i]) && !this.HasEquivalentRecipe(known, tiers[i]) {
-        book.AddRecipe(tiers[i]);
-        if added > 0 { labels += ", "; }
-        labels += TCO_Text.TierLabel(i);
-        added += 1;
+      if wanted {
+        if book.KnowsRecipe(tiers[i]) {
+          this.DebugRecipeSkip(gi, i, "already learned from this mod");
+        } else {
+          let equivalent = this.FindEquivalentRecipe(known, tiers[i]);
+          if TDBID.IsValid(equivalent) {
+            this.DebugRecipeSkip(gi, i, "player already knows " + TDBID.ToStringDEBUG(equivalent));
+          } else {
+            book.AddRecipe(tiers[i]);
+            if added > 0 { labels += ", "; }
+            labels += TCO_Text.TierLabel(i);
+            added += 1;
+          }
+        }
       }
       i += 1;
     }
@@ -431,20 +440,34 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     }
   }
 
-  // 상점 레시피(Items.Craftable_<등급>_<무기>)나 다른 모드의 레시피와 같은 "이름 + 등급" 조합이
-  // 이미 제작 목록에 있으면 중복으로 보고 건너뛴다.
-  public func HasEquivalentRecipe(known: array<wref<Item_Record>>, tierID: TweakDBID) -> Bool {
+  // 플레이어의 제작 도감(알고 있고 숨겨지지 않은 레시피)에 같은 "이름 + 등급" 의 일반 무기 레시피
+  // (상점에서 산 바닐라 레시피, 게임 시작 시 기본으로 주어지는 레시피, 다른 모드의 레시피)가 있으면 그 레코드를 돌려준다.
+  // 게임 데이터에 레시피가 정의되어 있기만 한 경우는 해당하지 않는다. known 은 CraftBook.GetCraftableItems() 의 결과다.
+  public func FindEquivalentRecipe(known: array<wref<Item_Record>>, tierID: TweakDBID) -> TweakDBID {
     let tierRecord = TweakDBInterface.GetItemRecord(tierID);
-    if !IsDefined(tierRecord) { return true; }
+    if !IsDefined(tierRecord) { return TDBID.None(); }
     for record in known {
       if IsDefined(record)
         && !record.TagsContains(n"IconicWeapon")
         && Equals(record.DisplayName(), tierRecord.DisplayName())
         && Equals(record.Quality().Type(), tierRecord.Quality().Type()) {
-        return true;
+        return record.GetID();
       }
     }
-    return false;
+    return TDBID.None();
+  }
+
+  public func HasEquivalentRecipe(known: array<wref<Item_Record>>, tierID: TweakDBID) -> Bool {
+    return TDBID.IsValid(this.FindEquivalentRecipe(known, tierID));
+  }
+
+  // debugLog 가 켜져 있으면 건너뛴 티어와 이유를 화면 알림으로 보여준다
+  private func DebugRecipeSkip(gi: GameInstance, tierIndex: Int32, reason: String) -> Void {
+    let text = "recipe skipped (" + TCO_Text.TierLabel(tierIndex) + "): " + reason;
+    TCO_Log(text);
+    if TCO_Config.DebugLog() {
+      TCO_Notify(gi, "[TCO] " + text);
+    }
   }
 
   // --- 20 특전: 레플리카 (TCO_Perk20_Replica.reds 의 후킹이 호출) ----------------
