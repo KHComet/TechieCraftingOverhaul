@@ -2,6 +2,10 @@
 # Techie Crafting Overhaul - configuration (TweakXL YAML)
 # These values are read at game start; the scripts do not hardcode them.
 # After changing a value, restart the game or run TweakXL.Reload() in the CET console.
+#
+# Mod Settings (optional): when it is installed, every option below EXCEPT perkMode, replicaMaterialItem and
+# replicaExcluded is taken from the in-game menu (Mod Settings -> Techie Crafting Overhaul) and the value in
+# this file is ignored. Without Mod Settings, this file is the only source.
 # ============================================================================
 
 # --- Perk mode -----------------------------------------------------------------

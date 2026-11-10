@@ -21,41 +21,131 @@ enum TCO_Perk {
 }
 
 // ---------------------------------------------------------------------------
-// 설정 (r6/tweaks/TechieCraftingOverhaul/TCO_Config.yaml 의 flat 을 읽는다)
+// 설정
+//   Mod Settings 가 설치되어 있으면 인게임 설정 값(TCO_Settings)을, 없으면 TCO_Config.yaml 의 flat 을 읽는다.
+//   YAML 전용: perkMode, replicaMaterialItem, replicaExcluded. 이 셋과 Yaml* 접근자만 TweakDB 생성 단계에서 쓸 수 있다.
 // ---------------------------------------------------------------------------
 public abstract class TCO_Config {
+  // --- YAML 전용 (로딩 시 결정되는 구조 / 레코드 ID / 목록) ---
   public static func PerkMode() -> CName { return TweakDBInterface.GetCName(t"TCO.Config.perkMode", n"auto"); }
-  public static func Perk9Enabled() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.perk9Enabled", true); }
-  public static func Perk15Enabled() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.perk15Enabled", true); }
-  public static func Perk20Enabled() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.perk20Enabled", true); }
-  public static func Perk9Attribute() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.perk9Attribute", 9); }
-  public static func Perk15Attribute() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.perk15Attribute", 15); }
-  public static func Perk20Attribute() -> Int32 { return TweakDBInterface.GetInt(t"TCO.Config.perk20Attribute", 20); }
   public static func ReplicaMaterialItem() -> TweakDBID { return TweakDBInterface.GetForeignKey(t"TCO.Config.replicaMaterialItem", t"Items.LegendaryMaterial1"); }
   public static func ReplicaExcluded() -> array<TweakDBID> { return TweakDBInterface.GetForeignKeyArray(t"TCO.Config.replicaExcluded"); }
-  // 레플리카 비용 프리셋: base(기반 무기 + 부품) / parts(부품만) / fusion(원본 2개 추가 소모, 부품 없음) / custom(아래 개별 값)
-  public static func ReplicaPreset() -> CName { return TweakDBInterface.GetCName(t"TCO.Config.replicaPreset", n"base"); }
+  public static func YamlReplicaMaterialAmount() -> Int32 { return Max(0, TweakDBInterface.GetInt(t"TCO.Config.replicaMaterialAmount", 200)); }
+
+  // --- 특전 ---
+  public static func Perk9Enabled() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perk9Enabled; }
+    return TweakDBInterface.GetBool(t"TCO.Config.perk9Enabled", true);
+  }
+  public static func Perk15Enabled() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perk15Enabled; }
+    return TweakDBInterface.GetBool(t"TCO.Config.perk15Enabled", true);
+  }
+  public static func Perk20Enabled() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perk20Enabled; }
+    return TweakDBInterface.GetBool(t"TCO.Config.perk20Enabled", true);
+  }
+  public static func Perk9Attribute() -> Int32 {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perk9Attribute; }
+    return TweakDBInterface.GetInt(t"TCO.Config.perk9Attribute", 9);
+  }
+  public static func Perk15Attribute() -> Int32 {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perk15Attribute; }
+    return TweakDBInterface.GetInt(t"TCO.Config.perk15Attribute", 15);
+  }
+  public static func Perk20Attribute() -> Int32 {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perk20Attribute; }
+    return TweakDBInterface.GetInt(t"TCO.Config.perk20Attribute", 20);
+  }
+
+  // --- 9 특전 ---
+  public static func RecipeTierMode() -> CName {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) {
+      switch s.recipeTiers {
+        case TCO_RecipeTiers.UpTo: return n"upto";
+        case TCO_RecipeTiers.All: return n"all";
+        default: return n"equal";
+      }
+    }
+    return TweakDBInterface.GetCName(t"TCO.Config.recipeTierMode", n"equal");
+  }
+
+  // --- 20 특전 ---
+  // 레플리카 비용 프리셋: base(기반 무기 + 부품) / parts(부품만) / fusion(원본 2개 추가 소모, 부품 없음) / custom(개별 값)
+  public static func ReplicaPreset() -> CName {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) {
+      switch s.replicaPreset {
+        case TCO_ReplicaPreset.Parts: return n"parts";
+        case TCO_ReplicaPreset.Fusion: return n"fusion";
+        case TCO_ReplicaPreset.Custom: return n"custom";
+        default: return n"base";
+      }
+    }
+    return TweakDBInterface.GetCName(t"TCO.Config.replicaPreset", n"base");
+  }
   public static func ReplicaUseBaseWeapon() -> Bool {
     let preset = TCO_Config.ReplicaPreset();
     if Equals(preset, n"parts") || Equals(preset, n"fusion") { return false; }
-    if Equals(preset, n"custom") { return TweakDBInterface.GetBool(t"TCO.Config.replicaUseBaseWeapon", true); }
+    if Equals(preset, n"custom") {
+      let s = TCO_ActiveSettings();
+      if IsDefined(s) { return s.replicaUseBaseWeapon; }
+      return TweakDBInterface.GetBool(t"TCO.Config.replicaUseBaseWeapon", true);
+    }
     return true;
   }
   public static func ReplicaOriginalCopies() -> Int32 {
     let preset = TCO_Config.ReplicaPreset();
     if Equals(preset, n"fusion") { return 2; }
-    if Equals(preset, n"custom") { return Max(0, TweakDBInterface.GetInt(t"TCO.Config.replicaOriginalCopies", 0)); }
+    if Equals(preset, n"custom") {
+      let s = TCO_ActiveSettings();
+      if IsDefined(s) { return Max(0, s.replicaOriginalCopies); }
+      return Max(0, TweakDBInterface.GetInt(t"TCO.Config.replicaOriginalCopies", 0));
+    }
     return 0;
   }
   public static func ReplicaMaterialAmount() -> Int32 {
     if Equals(TCO_Config.ReplicaPreset(), n"fusion") { return 0; }
-    return Max(0, TweakDBInterface.GetInt(t"TCO.Config.replicaMaterialAmount", 200));
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return Max(0, s.replicaMaterialAmount); }
+    return TCO_Config.YamlReplicaMaterialAmount();
   }
-  public static func ReplicaRequiredTier() -> Float { return Cast<Float>(TweakDBInterface.GetInt(t"TCO.Config.replicaRequiredTier", 8)); }
-  public static func ReplicaDisassembleAllowed() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.replicaDisassembleAllowed", false); }
-  public static func RecipeTierMode() -> CName { return TweakDBInterface.GetCName(t"TCO.Config.recipeTierMode", n"equal"); }
-  public static func Notifications() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.notifications", true); }
-  public static func DebugLog() -> Bool { return TweakDBInterface.GetBool(t"TCO.Config.debugLog", false); }
+  // 원본·기반 무기 최소 EffectiveTier (8 = 티어 5, 9 = 5+, 10 = 5++)
+  public static func ReplicaRequiredTier() -> Float {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) {
+      switch s.replicaRequiredTier {
+        case TCO_ReplicaTier.Tier5Plus: return 9.0;
+        case TCO_ReplicaTier.Tier5PlusPlus: return 10.0;
+        default: return 8.0;
+      }
+    }
+    return Cast<Float>(TweakDBInterface.GetInt(t"TCO.Config.replicaRequiredTier", 8));
+  }
+  public static func ReplicaDisassembleAllowed() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.replicaDisassembleAllowed; }
+    return TweakDBInterface.GetBool(t"TCO.Config.replicaDisassembleAllowed", false);
+  }
+
+  // --- 기타 ---
+  public static func Notifications() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.notifications; }
+    return TweakDBInterface.GetBool(t"TCO.Config.notifications", true);
+  }
+  public static func DebugLog() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.debugLog; }
+    return TweakDBInterface.GetBool(t"TCO.Config.debugLog", false);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -298,9 +388,21 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
   private persistent let m_clonedRecords: array<TweakDBID>;
   private let m_player: wref<PlayerPuppet>;
   private let m_syncing: Bool;
+  // Mod Settings 값을 담는 인스턴스 (Mod Settings 가 있을 때만 TCO_ActiveSettings 가 요청한다)
+  private let m_settings: ref<TCO_Settings>;
 
   public static func GetInstance(gi: GameInstance) -> ref<TechieCraftingOverhaul> {
     return GameInstance.GetScriptableSystemsContainer(gi).Get(n"TechieCraftingOverhaul") as TechieCraftingOverhaul;
+  }
+
+  // 새 인스턴스는 Mod Settings 가 써 넣은 클래스 기본값(= 저장된 설정)으로 만들어지고,
+  // 리스너로 등록해 두면 메뉴에서 값을 바꿀 때 필드가 바로 갱신된다.
+  public func GetSettings() -> ref<TCO_Settings> {
+    if !IsDefined(this.m_settings) {
+      this.m_settings = new TCO_Settings();
+      TCO_RegisterSettingsListener(this.m_settings);
+    }
+    return this.m_settings;
   }
 
   private func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
@@ -541,8 +643,53 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     return count;
   }
 
-  // 복제 조건 (모두 충족): 특전 활성, 원본 소지(티어5+), 기반 무기 소지(매핑이 있는 무기만, 티어5+, 매핑 수만큼), 미복제 종류
-  // 부품 수량은 바닐라 HasIngredients 가 레시피 재료로 검사한다.
+  // 무기별 비용 재정의(TCO.ReplicaCost.<아이코닉>)가 걸린 레플리카인가
+  public func HasCustomReplicaCost(replicaID: TweakDBID) -> Bool {
+    return TweakDBInterface.GetBool(replicaID + t".TCO_customCost", false);
+  }
+
+  // 레플리카 한 벌에 소모되는 무기 목록 (같은 무기가 여러 번 나오면 그만큼 필요).
+  // 무기별 재정의가 있으면 그 레시피의 무기 재료, 없으면 현재 프리셋대로 조합한다:
+  //   매핑된 기반 무기(기반 무기를 쓰는 프리셋일 때) + 원본 추가 소모분.
+  // 프리셋은 게임 중에 바뀔 수 있으므로(Mod Settings) 로딩 시 고정하지 않고 물을 때마다 계산한다.
+  public func GetReplicaBases(replicaID: TweakDBID) -> array<TweakDBID> {
+    if this.HasCustomReplicaCost(replicaID) {
+      return TweakDBInterface.GetForeignKeyArray(replicaID + t".TCO_customBases");
+    }
+    let bases: array<TweakDBID>;
+    if TCO_Config.ReplicaUseBaseWeapon() {
+      bases = TweakDBInterface.GetForeignKeyArray(replicaID + t".TCO_mappedBases");
+    }
+    let originalID = TweakDBInterface.GetForeignKey(replicaID + t".TCO_original", TDBID.None());
+    if TDBID.IsValid(originalID) {
+      let copies = TCO_Config.ReplicaOriginalCopies();
+      let n = 0;
+      while n < copies {
+        ArrayPush(bases, originalID);
+        n += 1;
+      }
+    }
+    return bases;
+  }
+
+  // 재료 줄에 표시할 보유 수량. 원본으로 남겨 둘 한 자루는 재료로 쓸 수 없으므로 세지 않는다
+  // (원본을 재료로도 요구하는 fusion 프리셋에서 "2/2 인데 제작 불가"가 되지 않도록).
+  public func CountAvailableBases(replicaID: TweakDBID, baseID: TweakDBID) -> Int32 {
+    let count = this.CountUsableBases(baseID);
+    let player = this.GetPlayerRef();
+    let originalID = TweakDBInterface.GetForeignKey(replicaID + t".TCO_original", TDBID.None());
+    let originalItem = this.FindOwnedOriginal(originalID);
+    if IsDefined(player) && ItemID.IsValid(originalItem) {
+      let originalData = GameInstance.GetTransactionSystem(this.GetGameInstance()).GetItemData(player, originalItem);
+      if this.IsUsableBase(originalData, baseID) {
+        count -= 1;
+      }
+    }
+    return Max(count, 0);
+  }
+
+  // 복제 조건 (모두 충족): 특전 활성, 원본 소지(티어5+), 필요한 무기 소지(티어5+, 목록 수만큼), 미복제 종류
+  // 부품 수량은 TCO_Perk20_Replica.reds 가 따로 검사한다.
   public func CanCraftReplica(replicaID: TweakDBID) -> Bool {
     if !this.IsPerkActive(TCO_Perk.Rigging20) { return false; }
     let originalID = TweakDBInterface.GetForeignKey(replicaID + t".TCO_original", TDBID.None());
@@ -550,7 +697,7 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     if this.IsClonedRecord(originalID) { return false; }
     let originalItem = this.FindOwnedOriginal(originalID);
     if !ItemID.IsValid(originalItem) { return false; }
-    let bases = TweakDBInterface.GetForeignKeyArray(replicaID + t".TCO_bases");
+    let bases = this.GetReplicaBases(replicaID);
     let chosen: array<ItemID>;
     ArrayPush(chosen, originalItem);
     for baseID in bases {

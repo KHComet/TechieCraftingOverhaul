@@ -22,7 +22,7 @@
 | [Perk Addition Framework](https://www.nexusmods.com/cyberpunk2077/mods/22758) | 1.0.1 이상 |
 
 Perk Addition Framework 가 있어야 특전이 테크 트리의 노드로 나타납니다. 없으면 테크 능력치에 따라 활성화됩니다.
-설정은 YAML 파일로 합니다.(ArchiveXL, Mod Settings 는 사용하지 않습니다. 추후 호환 패치 예정)
+설정은 YAML 파일로 합니다. [Mod Settings](https://github.com/jackhumbert/mod_settings) 가 설치되어 있으면 인게임 설정 메뉴에서도 바꿀 수 있습니다(선택 사항). ArchiveXL 은 사용하지 않습니다.
 
 ## 설치
 
@@ -109,33 +109,36 @@ Cyberpunk 2077/
 
 ## 설정 (`TCO_Config.yaml`)
 
-| 키 | 기본값 | 설명 |
-|---|---|---|
-| `perkMode` | auto | `auto`: Perk Addition Framework 가 있으면 트리 노드를 사용, 없으면 능력치에 따라 자동으로 지정됩니다. `tree` / `attribute` 로 고정 가능 |
-| `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | 특전별 on/off |
-| `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | attribute 모드에서 요구하는 테크 능력치(tree 모드는 바닐라 티어 9/15/20) |
-| `replicaPreset` | base | 레플리카 비용 프리셋: `base` / `parts` / `fusion` / `custom` |
-| `replicaUseBaseWeapon` / `replicaOriginalCopies` | true / 0 | `custom` 프리셋의 기반 무기 사용 여부, 원본 추가 소모 수 |
-| `replicaMaterialItem` | `Items.LegendaryMaterial1` | 복제에 소모되는 부품 |
-| `replicaMaterialAmount` | 200 | 부품 수량 (`base` / `parts` / `custom`) |
-| `replicaRequiredTier` | 8 | 원본·기반 무기의 최소 EffectiveTier (8 = 티어 5, 9 = 5+, 10 = 5++) |
-| `replicaDisassembleAllowed` | false | 레플리카 분해 허용 |
-| `replicaExcluded` | 스키피, 에레부스, 저격 둥지 라세츠 | 레플리카를 만들지 않을 신화 무기 목록 |
-| `recipeTierMode` | equal | 9 특전 습득 범위: `equal` 같은 티어 / `upto` 이하 전부 / `all` 전부 |
-| `notifications` | true | 화면 알림 |
-| `debugLog` | false | `[TCO]` 디버그 로그 (`FTLog` 와 `ModLog(n"TechieCraftingOverhaul")` 로 출력). 제작 메뉴를 열 때 레플리카 목록 동기화 요약을 화면 알림으로도 표시 |
+Mod Settings 가 설치되어 있으면 아래 표에서 '메뉴' 칸에 ✓ 가 있는 항목은 인게임 설정 메뉴(Mod Settings → Techie Crafting Overhaul)의 값이 쓰이고, YAML 의 같은 항목은 무시됩니다. 메뉴에서 바꾼 값은 게임을 다시 켜지 않아도 바로 적용됩니다. ✓ 가 없는 항목과 기반 무기 매핑, 무기별 비용 재정의는 YAML 에서만 설정합니다. Mod Settings 가 없으면 전부 YAML 을 읽습니다.
+
+| 키 | 기본값 | 메뉴 | 설명 |
+|---|---|---|---|
+| `perkMode` | auto | | `auto`: Perk Addition Framework 가 있으면 트리 노드를 사용, 없으면 능력치에 따라 자동으로 지정됩니다. `tree` / `attribute` 로 고정 가능 |
+| `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | ✓ | 특전별 on/off |
+| `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | ✓ | attribute 모드에서 요구하는 테크 능력치(tree 모드는 바닐라 티어 9/15/20) |
+| `replicaPreset` | base | ✓ | 레플리카 비용 프리셋: `base` / `parts` / `fusion` / `custom` |
+| `replicaUseBaseWeapon` / `replicaOriginalCopies` | true / 0 | ✓ | `custom` 프리셋의 기반 무기 사용 여부, 원본 추가 소모 수 |
+| `replicaMaterialItem` | `Items.LegendaryMaterial1` | | 복제에 소모되는 부품 |
+| `replicaMaterialAmount` | 200 | ✓ | 부품 수량 (`base` / `parts` / `custom`) |
+| `replicaRequiredTier` | 8 | ✓ | 원본·기반 무기의 최소 EffectiveTier (8 = 티어 5, 9 = 5+, 10 = 5++) |
+| `replicaDisassembleAllowed` | false | ✓ | 레플리카 분해 허용 |
+| `replicaExcluded` | 스키피, 에레부스, 저격 둥지 라세츠 | | 레플리카를 만들지 않을 신화 무기 목록 |
+| `recipeTierMode` | equal | ✓ | 9 특전 습득 범위: `equal` 같은 티어 / `upto` 이하 전부 / `all` 전부 |
+| `notifications` | true | ✓ | 화면 알림 |
+| `debugLog` | false | ✓ | 디버그 메시지. 레시피를 건너뛴 이유와 제작 메뉴를 열 때의 레플리카 목록 검사 결과를 화면 알림으로 표시 |
 
 ## 파일 구성
 
 ```
 r6/scripts/TechieCraftingOverhaul/
   TCO_Core.reds            설정 읽기, 문자열(한/영), 헬퍼, ScriptableSystem(특전 판정, 복제 기록)
-  TCO_Localization.reds    Codeware 현지화: 특전 이름/설명 (한/영)
+  TCO_Localization.reds    Codeware 현지화: 특전 이름/설명, 설정 메뉴 라벨 (한/영)
   TCO_Tweaks.reds          TweakXL ScriptableTweak: 티어 레시피, 레플리카 레시피, 특전 노드 연결
   TCO_Perk9_Recipes.reds   분해 후킹 → 레시피 습득
   TCO_Perk15_Mods.reds     탈착 판정, 교체 보존, UI 차단 해제, 분해 시 회수
   TCO_Perk20_Replica.reds  레플리카 레시피 동기화, 조건 검사, 레플리카 제작 흐름
   TCO_UI.reds              레플리카 이름 접미사, 제작 화면의 기반 무기 표시
+  TCO_Settings.reds        Mod Settings 연동(선택): 인게임 설정 메뉴 항목
 r6/tweaks/TechieCraftingOverhaul/
   TCO_Config.yaml          설정
   TCO_BaseWeaponMap.yaml   신화 무기 → 기반 무기 (바닐라 전체)

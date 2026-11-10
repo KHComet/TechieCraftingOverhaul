@@ -36,22 +36,71 @@ public final const func GetPlayerCraftableItems() -> array<wref<Item_Record>> {
   return wrappedMethod();
 }
 
-// 레플리카 재료 줄: 기반 무기의 보유 수량은 레코드 일치가 아니라 모델 일치(TCO_IsBaseModelInstance)로 센다.
-// 바닐라는 재료 레코드와 똑같은 레코드의 아이템만 세므로, 9 특전으로 제작한 무기나 외형 변형은 0 으로 표시된다.
+// 레플리카의 제작 비용.
+//   - 무기별 재정의(TCO.ReplicaCost.<아이코닉>)가 있으면 그 레시피를 바닐라 경로로 읽는다.
+//   - 없으면 현재 프리셋/설정대로 그때그때 조합한다 (설정이 게임 중에 바뀔 수 있으므로 로딩 시 고정하지 않는다).
+//   - 무기 재료의 보유 수량은 레코드 일치가 아니라 모델 일치(TCO_IsBaseModelInstance)로 센다.
+//     바닐라는 재료 레코드와 똑같은 레코드의 아이템만 세므로, 9 특전으로 제작한 무기나 외형 변형은 0 으로 표시된다.
 @wrapMethod(CraftingSystem)
 public final const func GetItemCraftingCost(itemRecord: wref<Item_Record>) -> array<IngredientData> {
-  let ingredients = wrappedMethod(itemRecord);
-  if IsDefined(itemRecord) && itemRecord.TagsContains(n"TCO_Replica") {
-    let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());
-    if IsDefined(sys) {
-      let i = 0;
-      while i < ArraySize(ingredients) {
-        if IsDefined(ingredients[i].id) && RPGManager.IsItemWeapon(ItemID.CreateQuery(ingredients[i].id.GetID())) {
-          ingredients[i].inventoryQuantity = sys.CountUsableBases(ingredients[i].id.GetID());
+  if !IsDefined(itemRecord) || !itemRecord.TagsContains(n"TCO_Replica") {
+    return wrappedMethod(itemRecord);
+  }
+  let sys = TechieCraftingOverhaul.GetInstance(this.GetGameInstance());
+  if !IsDefined(sys) {
+    return wrappedMethod(itemRecord);
+  }
+  let replicaID = itemRecord.GetID();
+  let ingredients: array<IngredientData>;
+  if sys.HasCustomReplicaCost(replicaID) {
+    ingredients = wrappedMethod(itemRecord);
+  } else {
+    ingredients = this.TCO_BuildReplicaCost(replicaID, sys);
+  }
+  let i = 0;
+  while i < ArraySize(ingredients) {
+    if IsDefined(ingredients[i].id) && RPGManager.IsItemWeapon(ItemID.CreateQuery(ingredients[i].id.GetID())) {
+      ingredients[i].inventoryQuantity = sys.CountAvailableBases(replicaID, ingredients[i].id.GetID());
+    }
+    i += 1;
+  }
+  return ingredients;
+}
+
+// 프리셋 비용 조합: 필요한 무기(종류별로 묶어 수량 표시) + 부품.
+@addMethod(CraftingSystem)
+private final const func TCO_BuildReplicaCost(replicaID: TweakDBID, sys: ref<TechieCraftingOverhaul>) -> array<IngredientData> {
+  let ingredients: array<IngredientData>;
+  let bases = sys.GetReplicaBases(replicaID);
+  let seen: array<TweakDBID>;
+  for baseID in bases {
+    if !ArrayContains(seen, baseID) {
+      ArrayPush(seen, baseID);
+      let count = 0;
+      for other in bases {
+        if other == baseID {
+          count += 1;
         }
-        i += 1;
+      }
+      let baseRecord = TweakDBInterface.GetItemRecord(baseID);
+      if IsDefined(baseRecord) {
+        ArrayPush(ingredients, this.CreateIngredientData(baseRecord, count));
       }
     }
+  }
+  let amount = TCO_Config.ReplicaMaterialAmount();
+  let materialRecord = TweakDBInterface.GetItemRecord(TCO_Config.ReplicaMaterialItem());
+  if amount > 0 && IsDefined(materialRecord) {
+    let material = this.CreateIngredientData(materialRecord, amount);
+    // 바닐라 GetItemCraftingCost 와 같은 제작 비용 감소(CraftingCostReduction)를 부품에 적용한다
+    let owner = this.GetPlayerCraftBook().GetOwner();
+    if IsDefined(owner) && material.quantity > 1 {
+      let reduction = GameInstance.GetStatsSystem(this.GetGameInstance()).GetStatValue(Cast<StatsObjectID>(owner.GetEntityID()), gamedataStatType.CraftingCostReduction);
+      if reduction > 0.0 {
+        material.quantity = CeilF(Cast<Float>(material.quantity) * (1.0 - reduction));
+      }
+    }
+    ArrayPush(ingredients, material);
   }
   return ingredients;
 }
@@ -138,7 +187,7 @@ private final func TCO_CraftReplica(target: wref<GameObject>, replicaRecord: ref
   let originalID = TweakDBInterface.GetForeignKey(replicaID + t".TCO_original", TDBID.None());
   let originalItem = sys.FindOwnedOriginal(originalID);
   let originalData = ts.GetItemData(target, originalItem);
-  let bases = TweakDBInterface.GetForeignKeyArray(replicaID + t".TCO_bases");
+  let bases = sys.GetReplicaBases(replicaID);
   let chosen: array<ItemID>;
   ArrayPush(chosen, originalItem);
   for baseID in bases {

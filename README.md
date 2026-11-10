@@ -22,7 +22,7 @@ Cyberpunk 2077 (2.5) mod. Adds three Technical Ability perks to the Tech perk tr
 | [Perk Addition Framework](https://www.nexusmods.com/cyberpunk2077/mods/22758) | 1.0.1 or later |
 
 Perk Addition Framework is required for the perks to appear as nodes in the Tech tree. Without it the perks activate by Technical Ability level.
-Configuration is a YAML file. (ArchiveXL and Mod Settings are not used. A compatibility patch is planned.)
+Configuration is a YAML file. With [Mod Settings](https://github.com/jackhumbert/mod_settings) installed the same options are also available in the in-game settings menu (optional). ArchiveXL is not used.
 
 ## Installation
 
@@ -109,33 +109,36 @@ With `perkMode: attribute` (or without the framework) a perk activates once Tech
 
 ## Configuration (`TCO_Config.yaml`)
 
-| Key | Default | Description |
-|---|---|---|
-| `perkMode` | auto | `auto`: tree nodes when Perk Addition Framework is present, attribute thresholds otherwise. `tree` / `attribute` force a mode. |
-| `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | Per-perk toggle |
-| `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | Technical Ability required in attribute mode (tree mode uses vanilla tiers 9/15/20) |
-| `replicaPreset` | base | Replica cost preset: `base` / `parts` / `fusion` / `custom` |
-| `replicaUseBaseWeapon` / `replicaOriginalCopies` | true / 0 | `custom` preset knobs: require base weapon, extra originals consumed |
-| `replicaMaterialItem` | `Items.LegendaryMaterial1` | Component consumed by replication |
-| `replicaMaterialAmount` | 200 | Component amount (`base` / `parts` / `custom`) |
-| `replicaRequiredTier` | 8 | Minimum EffectiveTier of original and base weapon (8 = Tier 5, 9 = 5+, 10 = 5++) |
-| `replicaDisassembleAllowed` | false | Allow disassembling replicas |
-| `replicaExcluded` | Skippy, Erebus, the sniper-nest Rasetsu | Iconic weapons that get no replica spec |
-| `recipeTierMode` | equal | Perk 9 scope: `equal` same tier / `upto` same and lower / `all` |
-| `notifications` | true | On-screen notifications |
-| `debugLog` | false | `[TCO]` debug output via `FTLog` and `ModLog(n"TechieCraftingOverhaul")`, plus an on-screen summary of the replica list sync when the crafting menu opens |
+With Mod Settings installed, the options marked ✓ in the Menu column take their value from the in-game settings menu (Mod Settings → Techie Crafting Overhaul) and the same keys in the YAML file are ignored. Changes made in the menu apply immediately, without a restart. Unmarked options, the base weapon map and per-weapon cost overrides are YAML only. Without Mod Settings everything is read from the YAML file.
+
+| Key | Default | Menu | Description |
+|---|---|---|---|
+| `perkMode` | auto | | `auto`: tree nodes when Perk Addition Framework is present, attribute thresholds otherwise. `tree` / `attribute` force a mode. |
+| `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | ✓ | Per-perk toggle |
+| `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | ✓ | Technical Ability required in attribute mode (tree mode uses vanilla tiers 9/15/20) |
+| `replicaPreset` | base | ✓ | Replica cost preset: `base` / `parts` / `fusion` / `custom` |
+| `replicaUseBaseWeapon` / `replicaOriginalCopies` | true / 0 | ✓ | `custom` preset knobs: require base weapon, extra originals consumed |
+| `replicaMaterialItem` | `Items.LegendaryMaterial1` | | Component consumed by replication |
+| `replicaMaterialAmount` | 200 | ✓ | Component amount (`base` / `parts` / `custom`) |
+| `replicaRequiredTier` | 8 | ✓ | Minimum EffectiveTier of original and base weapon (8 = Tier 5, 9 = 5+, 10 = 5++) |
+| `replicaDisassembleAllowed` | false | ✓ | Allow disassembling replicas |
+| `replicaExcluded` | Skippy, Erebus, the sniper-nest Rasetsu | | Iconic weapons that get no replica spec |
+| `recipeTierMode` | equal | ✓ | Perk 9 scope: `equal` same tier / `upto` same and lower / `all` |
+| `notifications` | true | ✓ | On-screen notifications |
+| `debugLog` | false | ✓ | Debug messages: why a spec was skipped and what the replica list found when the crafting menu opens, shown as on-screen notifications |
 
 ## Files
 
 ```
 r6/scripts/TechieCraftingOverhaul/
   TCO_Core.reds            config access, strings (KR/EN), helpers, ScriptableSystem (perk checks, replication log)
-  TCO_Localization.reds    Codeware localization: perk names and descriptions (KR/EN)
+  TCO_Localization.reds    Codeware localization: perk names and descriptions, settings menu labels (KR/EN)
   TCO_Tweaks.reds          TweakXL ScriptableTweak: tier specs, replica specs, perk tree attachment
   TCO_Perk9_Recipes.reds   disassembly hook → spec learning
   TCO_Perk15_Mods.reds     unequip check, swap preservation, UI unblocking, disassembly recovery
   TCO_Perk20_Replica.reds  replica spec sync, condition checks, replica crafting flow
   TCO_UI.reds              replica name suffix, base weapon display in the crafting panel
+  TCO_Settings.reds        Mod Settings integration (optional): in-game settings menu entries
 r6/tweaks/TechieCraftingOverhaul/
   TCO_Config.yaml          configuration
   TCO_BaseWeaponMap.yaml   iconic → base weapon (all vanilla iconics)

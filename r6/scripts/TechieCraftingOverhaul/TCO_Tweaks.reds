@@ -8,7 +8,7 @@
 //   2) 20 특전용 레플리카 레코드 생성
 //        아이코닉 I 마다  I_TCO_Replica  (Quest 태그 제거, OnLooted 비움, TCO_Replica 태그 추가)
 //        제작 재료 = 기반 무기(TCO.BaseMap 또는 자동 매칭) + 설정된 부품
-//        연결 flat = <아이코닉>.TCO_replica, <레플리카>.TCO_original / .TCO_bases / .TCO_hasBase
+//        연결 flat = <아이코닉>.TCO_replica, <레플리카>.TCO_original / .TCO_mappedBases / .TCO_customCost / .TCO_customBases
 //   주의: 이 단계에서는 GameInstance 를 쓸 수 없다 (TweakDB 접근만 가능).
 // ============================================================================
 
@@ -371,31 +371,29 @@ public class TCO_Generator {
       TweakDBManager.SetFlat(replicaID + t".quality", ToVariant(t"Quality.Legendary"));
       let noLootEffects: array<TweakDBID>;
       TweakDBManager.SetFlat(replicaID + t".OnLooted", ToVariant(noLootEffects));
-      // 비용: 무기별 재정의 패키지(TCO.ReplicaCost.<아이코닉>)가 있으면 그대로, 없으면 프리셋(TCO.Config.replicaPreset)대로 만든다.
-      //   base   = 매핑된 기반 무기 + 부품      parts  = 부품만
-      //   fusion = 원본 2개 추가 소모, 부품 없음   custom = 설정의 개별 값
-      // 기반 무기가 없는 아이코닉(매핑/자동 매칭 모두 실패)은 부품만으로 복제한다.
-      let bases: array<TweakDBID>;
-      let packageID = this.CustomCostPackage(iconic, iconics);
-      if TDBID.IsValid(packageID) {
-        bases = this.WeaponIngredients(packageID);
+      // 비용은 여기서 고정하지 않는다. 프리셋(기반 무기 사용 여부, 원본 추가 소모, 부품 수량)은 게임 중에 바뀔 수 있으므로
+      // (Mod Settings) 제작 화면이 비용을 물을 때 조합한다 (TCO_Perk20_Replica.reds 의 GetItemCraftingCost 후킹).
+      // 여기서는 그 조합에 필요한 재료만 기록한다:
+      //   TCO_mappedBases = 매핑된 기반 무기 (매핑/자동 매칭 모두 실패하면 비어 있고, 그 무기는 부품만으로 복제한다)
+      //   TCO_customCost / TCO_customBases = 무기별 재정의 패키지(TCO.ReplicaCost.<아이코닉>)가 있는지, 그 무기 재료
+      let mappedBases = this.ResolveBases(iconic, iconics, presets);
+      if ArraySize(mappedBases) == 0 {
+        this.m_noBaseCount += 1;
+      }
+      let customBases: array<TweakDBID>;
+      let customPackage = this.CustomCostPackage(iconic, iconics);
+      let hasCustom = TDBID.IsValid(customPackage);
+      let packageID = customPackage;
+      if hasCustom {
+        customBases = this.WeaponIngredients(customPackage);
       } else {
-        if TCO_Config.ReplicaUseBaseWeapon() {
-          bases = this.ResolveBases(iconic, iconics, presets);
-          if ArraySize(bases) == 0 {
-            this.m_noBaseCount += 1;
-          }
-        }
-        let copies = 0;
-        while copies < TCO_Config.ReplicaOriginalCopies() {
-          ArrayPush(bases, originalID);
-          copies += 1;
-        }
-        packageID = this.BuildReplicaPackage(replicaID, bases);
+        // 바닐라 코드가 CraftingData 를 직접 읽는 경우를 위한 기본 패키지 (기반 무기 + YAML 의 부품 수량)
+        packageID = this.BuildReplicaPackage(replicaID, mappedBases);
       }
       TweakDBManager.SetFlat(replicaID + t".CraftingData", ToVariant(packageID));
-      TweakDBManager.SetFlat(replicaID + t".TCO_bases", ToVariant(bases));
-      TweakDBManager.SetFlat(replicaID + t".TCO_hasBase", ToVariant(ArraySize(bases) > 0));
+      TweakDBManager.SetFlat(replicaID + t".TCO_mappedBases", ToVariant(mappedBases));
+      TweakDBManager.SetFlat(replicaID + t".TCO_customCost", ToVariant(hasCustom));
+      TweakDBManager.SetFlat(replicaID + t".TCO_customBases", ToVariant(customBases));
       TweakDBManager.SetFlat(replicaID + t".TCO_original", ToVariant(originalID));
       TweakDBManager.UpdateRecord(replicaID);
       TweakDBManager.SetFlat(originalID + t".TCO_replica", ToVariant(replicaID));
@@ -503,7 +501,7 @@ public class TCO_Generator {
     for baseID in bases {
       this.Accumulate(baseID, 1);
     }
-    this.Accumulate(TCO_Config.ReplicaMaterialItem(), TCO_Config.ReplicaMaterialAmount());
+    this.Accumulate(TCO_Config.ReplicaMaterialItem(), TCO_Config.YamlReplicaMaterialAmount());
     let packageID = replicaID + t"_Cost";
     this.CreatePackageFromAccumulated(packageID);
     return packageID;
