@@ -22,7 +22,7 @@ Cyberpunk 2077 (2.5) mod. Adds three Technical Ability perks to the Tech perk tr
 | [Perk Addition Framework](https://www.nexusmods.com/cyberpunk2077/mods/22758) | 1.0.1 or later |
 
 Perk Addition Framework is required for the perks to appear as nodes in the Tech tree. Without it the perks activate by Technical Ability level.
-Configuration is a YAML file. With [Mod Settings](https://github.com/jackhumbert/mod_settings) installed the same options are also available in the in-game settings menu (optional). ArchiveXL is not used.
+Configuration is a YAML file. With [Mod Settings](https://github.com/jackhumbert/mod_settings) installed the same options are also available in the in-game settings menu (optional).
 
 ## Installation
 
