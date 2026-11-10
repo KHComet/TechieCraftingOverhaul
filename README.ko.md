@@ -22,7 +22,7 @@
 | [Perk Addition Framework](https://www.nexusmods.com/cyberpunk2077/mods/22758) | 1.0.1 이상 |
 
 Perk Addition Framework 가 있어야 특전이 테크 트리의 노드로 나타납니다. 없으면 테크 능력치에 따라 활성화됩니다.
-설정은 YAML 파일로 합니다. [Mod Settings](https://github.com/jackhumbert/mod_settings) 가 설치되어 있으면 인게임 설정 메뉴에서도 바꿀 수 있습니다(선택 사항). ArchiveXL 은 사용하지 않습니다.
+설정은 YAML 파일로 합니다. [Mod Settings](https://github.com/jackhumbert/mod_settings) 가 설치되어 있으면 인게임 설정 메뉴에서도 바꿀 수 있습니다(선택 사항).
 
 ## 설치
 
