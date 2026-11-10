@@ -56,6 +56,12 @@ public class TCO_Settings {
 
   @runtimeProperty("ModSettings.mod", "Techie Crafting Overhaul")
   @runtimeProperty("ModSettings.category", "TCO-Settings-Cat-Perks")
+  @runtimeProperty("ModSettings.displayName", "TCO-Settings-PerkFreeUnlock")
+  @runtimeProperty("ModSettings.description", "TCO-Settings-PerkFreeUnlock-Desc")
+  public let perkFreeUnlock: Bool = false;
+
+  @runtimeProperty("ModSettings.mod", "Techie Crafting Overhaul")
+  @runtimeProperty("ModSettings.category", "TCO-Settings-Cat-Perks")
   @runtimeProperty("ModSettings.displayName", "TCO-Settings-Perk9Attribute")
   @runtimeProperty("ModSettings.description", "TCO-Settings-PerkAttribute-Desc")
   @runtimeProperty("ModSettings.step", "1")
@@ -156,6 +162,15 @@ public class TCO_Settings {
   @runtimeProperty("ModSettings.displayName", "TCO-Settings-DebugLog")
   @runtimeProperty("ModSettings.description", "TCO-Settings-DebugLog-Desc")
   public let debugLog: Bool = false;
+
+  // Mod Settings 가 변경된 값을 적용한 뒤 호출한다 (RegisterListenerToModifications 로 등록한 객체의 이 이름의 함수).
+  // 자동 해금 옵션이 바뀌었을 수 있으므로 지급/회수를 다시 맞춘다. 세션이 없으면(메인 메뉴) 아무 일도 하지 않는다.
+  public func OnModSettingsChange() -> Void {
+    let sys = TechieCraftingOverhaul.GetInstance(GetGameInstance());
+    if IsDefined(sys) {
+      sys.SyncFreePerks();
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -178,10 +193,12 @@ public static func TCO_ActiveSettings() -> ref<TCO_Settings> {
   return null;
 }
 
-// 값이 바뀔 때 인스턴스 필드가 함께 갱신되도록 등록한다 (Mod Settings 는 약한 참조로 들고 있는다).
+// 값이 바뀔 때 인스턴스 필드가 함께 갱신되고(ToClass) 변경 알림 OnModSettingsChange 를 받도록(ToModifications) 등록한다.
+// Mod Settings 는 둘 다 약한 참조로 들고 있는다.
 @if(ModuleExists("ModSettingsModule"))
 public static func TCO_RegisterSettingsListener(settings: ref<TCO_Settings>) -> Void {
   ModSettings.RegisterListenerToClass(settings);
+  ModSettings.RegisterListenerToModifications(settings);
 }
 
 @if(!ModuleExists("ModSettingsModule"))

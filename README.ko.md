@@ -52,6 +52,8 @@ Cyberpunk 2077/
 
 `perkMode: attribute`(또는 프레임워크 미설치) 에서는 테크 능력치가 9 / 15 / 20 에 도달하면 특전이 활성화됩니다.
 
+`perkFreeUnlock` 을 켜면 노드는 트리에 그대로 보이되, 테크 능력치가 요구치에 도달하는 순간 특전 포인트 소모 없이 자동으로 해금됩니다. 이미 포인트로 찍은 특전은 포인트를 돌려받습니다. 공짜로 받은 특전은 되팔거나 속성을 초기화해도 포인트가 환불되지 않으며, 옵션을 끄면 회수됩니다.
+
 ## 특전 상세
 
 ### 테키 실버핸드 (테크 9)
@@ -114,6 +116,7 @@ Mod Settings 가 설치되어 있으면 아래 표에서 '메뉴' 칸에 ✓ 가
 | 키 | 기본값 | 메뉴 | 설명 |
 |---|---|---|---|
 | `perkMode` | auto | | `auto`: Perk Addition Framework 가 있으면 트리 노드를 사용, 없으면 능력치에 따라 자동으로 지정됩니다. `tree` / `attribute` 로 고정 가능 |
+| `perkFreeUnlock` | false | ✓ | 포인트 없이 자동 해금. 노드는 트리에 그대로 있고, 테크가 9 / 15 / 20 에 도달하면 포인트 소모 없이 해금됩니다 |
 | `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | ✓ | 특전별 on/off |
 | `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | ✓ | attribute 모드에서 요구하는 테크 능력치(tree 모드는 바닐라 티어 9/15/20) |
 | `replicaPreset` | base | ✓ | 레플리카 비용 프리셋: `base` / `parts` / `fusion` / `custom` |
@@ -139,6 +142,7 @@ r6/scripts/TechieCraftingOverhaul/
   TCO_Perk20_Replica.reds  레플리카 레시피 동기화, 조건 검사, 레플리카 제작 흐름
   TCO_UI.reds              레플리카 이름 접미사, 제작 화면의 기반 무기 표시
   TCO_Settings.reds        Mod Settings 연동(선택): 인게임 설정 메뉴 항목
+  TCO_FreePerks.reds       포인트 없이 자동 해금: 능력치 변경 감지, 공짜 특전 환불 차단
 r6/tweaks/TechieCraftingOverhaul/
   TCO_Config.yaml          설정
   TCO_BaseWeaponMap.yaml   신화 무기 → 기반 무기 (바닐라 전체)

@@ -52,6 +52,8 @@ The three nodes form a chain in the row-2 right-hand area of the Tech tree, usin
 
 With `perkMode: attribute` (or without the framework) a perk activates once Technical Ability reaches 9 / 15 / 20.
 
+With `perkFreeUnlock` on, the nodes stay visible in the tree but unlock by themselves, at no perk point cost, the moment Technical Ability reaches the requirement. Points already spent on them are refunded. Free perks give no refund when sold or when attributes are reset, and are taken back when the option is turned off.
+
 ## Perk details
 
 ### If Johnny Were a Techie... (Tech 9)
@@ -114,6 +116,7 @@ With Mod Settings installed, the options marked ✓ in the Menu column take thei
 | Key | Default | Menu | Description |
 |---|---|---|---|
 | `perkMode` | auto | | `auto`: tree nodes when Perk Addition Framework is present, attribute thresholds otherwise. `tree` / `attribute` force a mode. |
+| `perkFreeUnlock` | false | ✓ | Unlock without perk points. The nodes stay in the tree and unlock for free once Tech reaches 9 / 15 / 20 |
 | `perk9Enabled` / `perk15Enabled` / `perk20Enabled` | true | ✓ | Per-perk toggle |
 | `perk9Attribute` / `perk15Attribute` / `perk20Attribute` | 9 / 15 / 20 | ✓ | Technical Ability required in attribute mode (tree mode uses vanilla tiers 9/15/20) |
 | `replicaPreset` | base | ✓ | Replica cost preset: `base` / `parts` / `fusion` / `custom` |
@@ -139,6 +142,7 @@ r6/scripts/TechieCraftingOverhaul/
   TCO_Perk20_Replica.reds  replica spec sync, condition checks, replica crafting flow
   TCO_UI.reds              replica name suffix, base weapon display in the crafting panel
   TCO_Settings.reds        Mod Settings integration (optional): in-game settings menu entries
+  TCO_FreePerks.reds       unlock without perk points: attribute change hook, no refund for free perks
 r6/tweaks/TechieCraftingOverhaul/
   TCO_Config.yaml          configuration
   TCO_BaseWeaponMap.yaml   iconic → base weapon (all vanilla iconics)

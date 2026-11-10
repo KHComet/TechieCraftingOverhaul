@@ -48,6 +48,12 @@ public abstract class TCO_Config {
     if IsDefined(s) { return s.perk20Enabled; }
     return TweakDBInterface.GetBool(t"TCO.Config.perk20Enabled", true);
   }
+  // 특전 노드를 포인트 없이 자동 해금 (트리 노드가 있을 때만 의미가 있다)
+  public static func PerkFreeUnlock() -> Bool {
+    let s = TCO_ActiveSettings();
+    if IsDefined(s) { return s.perkFreeUnlock; }
+    return TweakDBInterface.GetBool(t"TCO.Config.perkFreeUnlock", false);
+  }
   public static func Perk9Attribute() -> Int32 {
     let s = TCO_ActiveSettings();
     if IsDefined(s) { return s.perk9Attribute; }
@@ -196,6 +202,11 @@ public abstract class TCO_Text {
   public static func ReplicaCrafted(gi: GameInstance, itemName: String) -> String {
     if TCO_Text.IsKorean(gi) { return "계획된 개조 완료 - 레플리카 제작: " + itemName; }
     return "Detail rigging complete - replica assembled: " + itemName;
+  }
+
+  public static func PerkAutoUnlocked(gi: GameInstance, perkName: String) -> String {
+    if TCO_Text.IsKorean(gi) { return "특전 자동 해금: " + perkName; }
+    return "Perk unlocked: " + perkName;
   }
 
   public static func ReplicaFailed(gi: GameInstance) -> String {
@@ -390,6 +401,13 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
   private let m_syncing: Bool;
   // Mod Settings 값을 담는 인스턴스 (Mod Settings 가 있을 때만 TCO_ActiveSettings 가 요청한다)
   private let m_settings: ref<TCO_Settings>;
+  // 포인트 없이 지급한 특전의 enumName (세이브에 저장). 여기 있는 특전은 팔리거나 초기화되어도 포인트를 돌려주지 않는다.
+  private persistent let m_freePerks: array<CName>;
+  // 세션이 완전히 올라온 뒤(플레이어 부착 + 1초)에만 자동 해금을 동기화한다. 복원 도중에는 m_freePerks 가 아직
+  // 비어 있을 수 있고, 그 상태로 동기화하면 이미 공짜로 받은 특전을 "포인트로 산 것"으로 보고 환불해 버린다.
+  private let m_ready: Bool;
+  private let m_freeSyncing: Bool;
+  private let m_lastFreeMode: Bool;
 
   public static func GetInstance(gi: GameInstance) -> ref<TechieCraftingOverhaul> {
     return GameInstance.GetScriptableSystemsContainer(gi).Get(n"TechieCraftingOverhaul") as TechieCraftingOverhaul;
@@ -407,11 +425,21 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
 
   private func OnPlayerAttach(request: ref<PlayerAttachRequest>) -> Void {
     this.m_player = request.owner as PlayerPuppet;
+    this.m_ready = false;
+    let readyCallback = new TCO_ReadyCallback();
+    readyCallback.system = this;
+    GameInstance.GetDelaySystem(this.GetGameInstance()).DelayCallback(readyCallback, 1.0, false);
     TCO_Log("Player attached. Tech points = " + IntToString(this.GetTechPoints()) + ", tree mode = " + ToString(this.IsTreeModeActive()) + ", cloned types = " + IntToString(ArraySize(this.m_clonedNames)));
   }
 
   private func OnPlayerDetach(request: ref<PlayerDetachRequest>) -> Void {
     this.m_player = null;
+    this.m_ready = false;
+  }
+
+  public func OnSessionReady() -> Void {
+    this.m_ready = true;
+    this.SyncFreePerks();
   }
 
   public func GetPlayerRef() -> wref<PlayerPuppet> {
@@ -463,7 +491,17 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
       let player = this.GetPlayerRef();
       if !IsDefined(player) { return false; }
       let data = PlayerDevelopmentSystem.GetData(player);
-      return IsDefined(data) && data.IsNewPerkBought(perkType) > 0;
+      if !IsDefined(data) { return false; }
+      let free = TCO_Config.PerkFreeUnlock();
+      if (free && !this.m_lastFreeMode) || (!free && this.m_lastFreeMode) {
+        // 옵션이 바뀐 것을 변경 알림으로 받지 못했을 때의 안전망
+        this.SyncFreePerks();
+      }
+      if free {
+        // 자동 해금: 노드 표시가 아직 갱신되지 않았더라도 효과는 능력치 기준으로 판정한다
+        return data.HasEnoughtAttributePoints(perkType);
+      }
+      return data.IsNewPerkBought(perkType) > 0;
     }
     if Equals(mode, n"tree") {
       return false;
@@ -570,6 +608,166 @@ public class TechieCraftingOverhaul extends ScriptableSystem {
     if TCO_Config.DebugLog() {
       TCO_Notify(gi, "[TCO] " + text);
     }
+  }
+
+  // --- 포인트 없이 자동 해금 (TCO_FreePerks.reds 의 후킹이 호출) ----------------
+  // 옵션이 켜져 있고 특전이 트리 노드로 존재할 때만 동작한다 (능력치 모드는 원래 자동이다)
+  public func IsFreeUnlockActive() -> Bool {
+    return TCO_Config.PerkFreeUnlock() && this.IsTreeModeActive();
+  }
+
+  public func IsFreePerk(perkType: gamedataNewPerkType) -> Bool {
+    let record = RPGManager.GetNewPerkRecord(perkType);
+    return IsDefined(record) && ArrayContains(this.m_freePerks, record.EnumName());
+  }
+
+  // 특전이 팔릴 때 환불 직전에 호출된다. 공짜로 지급한 특전이면 표시를 지우고 true (= 환불하지 않는다).
+  public func ConsumeFreePerkFlag(perkType: gamedataNewPerkType) -> Bool {
+    let record = RPGManager.GetNewPerkRecord(perkType);
+    if !IsDefined(record) { return false; }
+    let enumName = record.EnumName();
+    if !ArrayContains(this.m_freePerks, enumName) { return false; }
+    ArrayRemove(this.m_freePerks, enumName);
+    return true;
+  }
+
+  // 자동 해금 상태를 현재 설정/능력치에 맞춘다. 세이브 로드 직후, 속성 값 변경 시, 옵션 변경 시 호출된다.
+  //   옵션 켜짐 + 요구치 충족 : 미보유면 공짜로 지급. 포인트로 샀던 특전은 포인트를 돌려주고 공짜 특전으로 바꾼다.
+  //   옵션 꺼짐 또는 요구치 미달 : 공짜로 받았던 특전을 환불 없이 회수한다. 포인트로 산 특전은 건드리지 않는다.
+  // 조니/브레인댄스처럼 플레이어가 대역(replacer)일 때는 건드리지 않는다. 대역은 자기 성장 데이터를 따로 갖고 있어서,
+  // 그 데이터로 맞추면 V 의 공짜 특전 표시가 지워지고 돌아왔을 때 포인트를 잘못 환불하게 된다.
+  public func SyncFreePerks() -> Void {
+    if !this.m_ready || this.m_freeSyncing { return; }
+    let player = this.GetPlayerRef();
+    if !IsDefined(player) || player.IsReplacer() { return; }
+    let devData = PlayerDevelopmentSystem.GetData(player);
+    if !IsDefined(devData) { return; }
+    this.m_freeSyncing = true;
+    this.m_lastFreeMode = TCO_Config.PerkFreeUnlock();
+    let free = this.IsFreeUnlockActive();
+    let gi = this.GetGameInstance();
+    let perkType: gamedataNewPerkType;
+
+    // 회수는 뒤에서부터 (20 -> 15 -> 9)
+    let revokeOrder: array<TCO_Perk>;
+    ArrayPush(revokeOrder, TCO_Perk.Rigging20);
+    ArrayPush(revokeOrder, TCO_Perk.Removable15);
+    ArrayPush(revokeOrder, TCO_Perk.Techie9);
+    let revoked = false;
+    for perk in revokeOrder {
+      if TCO_ResolvePerkType(perk, perkType) {
+        let enumName = TCO_PerkEnumName(perk);
+        let owned = devData.IsNewPerkBought(perkType) > 0;
+        let flagged = ArrayContains(this.m_freePerks, enumName);
+        let eligible = free && devData.HasEnoughtAttributePoints(perkType);
+        if flagged && !owned {
+          ArrayRemove(this.m_freePerks, enumName);
+        } else {
+          if flagged && !eligible {
+            this.RevokeFreePerk(devData, perkType);
+            revoked = true;
+            TCO_Log("Free perk revoked: " + NameToString(enumName));
+          }
+        }
+      }
+    }
+    // 회수한 뒤에는 바닐라 초기화처럼, 요구치나 선행 특전이 더 이상 충족되지 않는 미보유 노드를 잠근다 (9 -> 15 -> 20)
+    if revoked {
+      let lockOrder: array<TCO_Perk>;
+      ArrayPush(lockOrder, TCO_Perk.Techie9);
+      ArrayPush(lockOrder, TCO_Perk.Removable15);
+      ArrayPush(lockOrder, TCO_Perk.Rigging20);
+      for perk in lockOrder {
+        if TCO_ResolvePerkType(perk, perkType)
+          && devData.IsNewPerkUnlocked(perkType)
+          && devData.IsNewPerkBought(perkType) == 0
+          && !this.PerkRequirementsMet(devData, perkType)
+          && devData.LockNewPerk(perkType) {
+          let lockedEvent = new NewPerkLockedEvent();
+          lockedEvent.perkType = perkType;
+          GameInstance.GetUISystem(gi).QueueEvent(lockedEvent);
+        }
+      }
+    }
+
+    // 지급은 앞에서부터 (9 -> 15 -> 20)
+    if free {
+      let grantOrder: array<TCO_Perk>;
+      ArrayPush(grantOrder, TCO_Perk.Techie9);
+      ArrayPush(grantOrder, TCO_Perk.Removable15);
+      ArrayPush(grantOrder, TCO_Perk.Rigging20);
+      for perk in grantOrder {
+        if TCO_ResolvePerkType(perk, perkType) && devData.HasEnoughtAttributePoints(perkType) {
+          let enumName = TCO_PerkEnumName(perk);
+          if devData.IsNewPerkBought(perkType) > 0 {
+            if !ArrayContains(this.m_freePerks, enumName) {
+              // 포인트로 샀던 특전: 포인트를 돌려주고 공짜 특전으로 바꾼다
+              devData.AddDevelopmentPoints(1, gamedataDevelopmentPointType.Primary);
+              ArrayPush(this.m_freePerks, enumName);
+              TCO_Log("Paid perk converted to free, 1 point refunded: " + NameToString(enumName));
+            }
+          } else {
+            if this.GrantFreePerk(devData, perkType, enumName) {
+              let record = RPGManager.GetNewPerkRecord(perkType);
+              TCO_Notify(gi, TCO_Text.PerkAutoUnlocked(gi, GetLocalizedText(record.Loc_name_key())));
+              TCO_Log("Free perk granted: " + NameToString(enumName));
+            }
+          }
+        }
+      }
+    }
+    this.m_freeSyncing = false;
+  }
+
+  private func GrantFreePerk(data: ref<PlayerDevelopmentData>, perkType: gamedataNewPerkType, enumName: CName) -> Bool {
+    let ui = GameInstance.GetUISystem(this.GetGameInstance());
+    if !data.IsNewPerkUnlocked(perkType) && data.UnlockNewPerk(perkType) {
+      let unlockedEvent = new NewPerkUnlockedEvent();
+      unlockedEvent.perkType = perkType;
+      ui.QueueEvent(unlockedEvent);
+    }
+    // forceBuy = true : 포인트 잔량/선행 특전 검사를 건너뛰고 포인트도 차감하지 않는 바닐라 경로
+    if !data.BuyNewPerk(perkType, true) {
+      return false;
+    }
+    ArrayPush(this.m_freePerks, enumName);
+    let boughtEvent = new NewPerkBoughtEvent();
+    boughtEvent.perkType = perkType;
+    ui.QueueEvent(boughtEvent);
+    return true;
+  }
+
+  // 환불 없이 회수한다 (환불 차단은 ReturnDevelopmentPointForSoldPerk 후킹이 m_freePerks 표시를 보고 처리).
+  private func RevokeFreePerk(data: ref<PlayerDevelopmentData>, perkType: gamedataNewPerkType) -> Void {
+    let ui = GameInstance.GetUISystem(this.GetGameInstance());
+    let player = this.GetPlayerRef();
+    let sold: Int32;
+    let rounds = 0;
+    while rounds < 4 && data.ForceSellNewPerk(perkType, sold) {
+      let soldEvent = new NewPerkSoldEvent();
+      soldEvent.perkType = perkType;
+      soldEvent.perkLevelSold = sold;
+      ui.QueueEvent(soldEvent);
+      if IsDefined(player) {
+        player.QueueEvent(soldEvent);
+      }
+      rounds += 1;
+    }
+  }
+
+  // 바닐라의 해금 조건과 같다: 속성 요구치 + 선행 특전 최대 레벨
+  private func PerkRequirementsMet(data: ref<PlayerDevelopmentData>, perkType: gamedataNewPerkType) -> Bool {
+    if !data.HasEnoughtAttributePoints(perkType) { return false; }
+    let record = RPGManager.GetNewPerkRecord(perkType);
+    if !IsDefined(record) { return false; }
+    let required: array<wref<NewPerk_Record>>;
+    record.RequiresPerks(required);
+    for requiredPerk in required {
+      if data.IsNewPerkBought(requiredPerk.Type()) < requiredPerk.GetLevelsCount() {
+        return false;
+      }
+    }
+    return true;
   }
 
   // --- 20 특전: 레플리카 (TCO_Perk20_Replica.reds 의 후킹이 호출) ----------------

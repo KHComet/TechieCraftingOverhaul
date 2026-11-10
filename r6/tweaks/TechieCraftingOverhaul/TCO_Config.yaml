@@ -14,6 +14,11 @@
 # tree      : always tree nodes (perks stay inactive without the framework)
 # attribute : always attribute thresholds (no nodes are added to the tree)
 TCO.Config.perkMode: n"auto"
+# Unlock the three perks without spending perk points. The nodes stay in the Tech tree and are bought automatically,
+# for free, as soon as Technical Ability reaches 9 / 15 / 20. Points already spent on them are refunded, and turning
+# the option off takes the free perks back. Only applies when the perks are tree nodes (Perk Addition Framework);
+# in attribute mode the perks are automatic anyway.
+TCO.Config.perkFreeUnlock: false
 
 # --- Perk activation / required Technical Ability (attribute mode, or the auto-mode fallback) ---
 # In tree mode the vanilla tier records set the requirement (Adept 9 / Expert 15 / Master 20).

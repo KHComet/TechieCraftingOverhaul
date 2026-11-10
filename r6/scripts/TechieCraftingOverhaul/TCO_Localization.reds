@@ -36,6 +36,8 @@ public class TCO_English extends ModLocalizationPackage {
     this.Text("TCO-Settings-Perk15Enabled", "Should've Been Removable");
     this.Text("TCO-Settings-Perk20Enabled", "Detail Rigging");
     this.Text("TCO-Settings-PerkEnabled-Desc", "When off, the perk has no effect even if you own it.");
+    this.Text("TCO-Settings-PerkFreeUnlock", "Unlock without perk points");
+    this.Text("TCO-Settings-PerkFreeUnlock-Desc", "The three perks unlock by themselves when Technical Ability reaches 9 / 15 / 20 and cost no perk points. Points already spent on them are refunded. Turning this off takes the free perks back.");
     this.Text("TCO-Settings-Perk9Attribute", "Tech required: If Johnny Were a Techie...");
     this.Text("TCO-Settings-Perk15Attribute", "Tech required: Should've Been Removable");
     this.Text("TCO-Settings-Perk20Attribute", "Tech required: Detail Rigging");
@@ -87,6 +89,8 @@ public class TCO_Korean extends ModLocalizationPackage {
     this.Text("TCO-Settings-Perk15Enabled", "빠지게 만들었어야지");
     this.Text("TCO-Settings-Perk20Enabled", "계획된 개조");
     this.Text("TCO-Settings-PerkEnabled-Desc", "끄면 특전을 보유하고 있어도 효과가 적용되지 않습니다.");
+    this.Text("TCO-Settings-PerkFreeUnlock", "포인트 없이 자동 해금");
+    this.Text("TCO-Settings-PerkFreeUnlock-Desc", "테크 능력치가 9 / 15 / 20 에 도달하면 세 특전이 포인트 소모 없이 자동으로 해금됩니다. 이미 포인트로 찍은 특전은 포인트를 돌려받습니다. 끄면 공짜로 받은 특전은 회수됩니다.");
     this.Text("TCO-Settings-Perk9Attribute", "요구 테크: 테키 실버핸드");
     this.Text("TCO-Settings-Perk15Attribute", "요구 테크: 빠지게 만들었어야지");
     this.Text("TCO-Settings-Perk20Attribute", "요구 테크: 계획된 개조");
